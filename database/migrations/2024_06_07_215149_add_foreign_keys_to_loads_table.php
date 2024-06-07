@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('loads', function (Blueprint $table) {
+            $table->foreign(['routes_id'], 'fk_load_routes1')->references(['id'])->on('routes')->onUpdate('no action')->onDelete('no action');
+            $table->foreign(['truck_types_id'], 'fk_load_truck_types1')->references(['id'])->on('truck_types')->onUpdate('no action')->onDelete('no action');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('loads', function (Blueprint $table) {
+            $table->dropForeign('fk_load_routes1');
+            $table->dropForeign('fk_load_truck_types1');
+        });
+    }
+};
