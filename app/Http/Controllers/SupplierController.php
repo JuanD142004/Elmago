@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule; // Importa Rule para la validación de unicidad
+
+
 
 class SupplierController extends Controller
 {
@@ -22,32 +25,52 @@ class SupplierController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nit' => 'required|unique:suppliers,nit',
-            
-            'supplier_name'=>'required:suppliers,supplier_name',
-            'cell_phone' => 'required|unique:suppliers,cell_phone',
-            'mail' => 'required|email|unique:suppliers,mail',
-            'address' => 'required:suppliers,address',
-            // otras reglas de validación
-        ], [
-            'nit.required' => 'El NIT es obligatorio.',
-            'nit.unique' => 'El NIT ya está registrado.',
-            'cell_phone.required' => 'El número de teléfono es obligatorio.',
-            'cell_phone.unique' => 'El número de teléfono ya está registrado.',
-            'mail.required' => 'El correo electrónico es obligatorio.',
-            'mail.email' => 'El correo electrónico debe ser una dirección válida.',
-            'mail.unique' => 'El correo electrónico ya está registrado.',
-            'address.required' => 'La direccion es obligatorio.',
-            // otros mensajes de validación
-        ]);
-    
-        $supplier = Supplier::create($request->all());
+{
+    // Normalizar entradas
+    $input = $request->all();
+    $input['nit'] = preg_replace('/\s+/', '', $input['nit']);
+    $input['cell_phone'] = preg_replace('/\s+/', '', $input['cell_phone']);
+    $input['mail'] = trim($input['mail']);
 
-        return redirect()->route('supplier.index')
-            ->with('success', 'Proveedor creado con éxito.');
+    $validator = Validator::make($input, [
+        'nit' => 'required|numeric|unique:suppliers,nit',
+        'supplier_name' => 'required|string|max:255',
+        'cell_phone' => 'required|numeric|digits:10|unique:suppliers,cell_phone',
+        'mail' => [
+            'required',
+            'email:rfc,dns',
+            Rule::unique('suppliers')->where(function ($query) use ($input) {
+                return $query->where('mail', $input['mail']);
+            })
+        ],
+        'address' => 'required|string|max:255',
+    ], [
+        'nit.required' => 'El NIT es obligatorio.',
+        'nit.numeric' => 'El NIT debe ser un número.',
+        'nit.unique' => 'El NIT ya está registrado.',
+        'supplier_name.required' => 'El nombre del proveedor es obligatorio.',
+        'cell_phone.required' => 'El número de teléfono es obligatorio.',
+        'cell_phone.numeric' => 'El número de teléfono debe ser numérico.',
+        'cell_phone.digits' => 'El número de teléfono debe tener 10 dígitos.',
+        'cell_phone.unique' => 'El número de teléfono ya está registrado.',
+        'mail.required' => 'El correo electrónico es obligatorio.',
+        'mail.email' => 'El correo electrónico debe ser una dirección válida.',
+        'mail.unique' => 'El correo electrónico ya está registrado.',
+        'address.required' => 'La dirección es obligatoria.',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
     }
+
+    Supplier::create($input);
+
+    return redirect()->route('supplier.index')
+        ->with('success', 'Proveedor creado con éxito.');
+}
+
 
     public function edit($id)
     {
@@ -57,33 +80,55 @@ class SupplierController extends Controller
 
     public function update(Request $request, Supplier $supplier)
     {
-        $request->validate([
+        // Normalizar entradas
+        $input = $request->all();
+        $input['nit'] = preg_replace('/\s+/', '', $input['nit']);
+        $input['cell_phone'] = preg_replace('/\s+/', '', $input['cell_phone']);
+        $input['mail'] = trim($input['mail']);
+
+        $validator = Validator::make($input, [
             'nit' => [
                 'required',
+                'numeric',
                 Rule::unique('suppliers')->ignore($supplier->id),
             ],
+            'supplier_name' => 'required|string|max:255',
             'cell_phone' => [
                 'required',
+                'numeric',
+                'digits:10',
                 Rule::unique('suppliers')->ignore($supplier->id),
             ],
             'mail' => [
                 'required',
-                'email',
-                Rule::unique('suppliers')->ignore($supplier->id),
+                'email:rfc,dns',
+                Rule::unique('suppliers')->ignore($supplier->id)->where(function ($query) use ($input) {
+                    return $query->where('mail', $input['mail']);
+                })
             ],
-            // otras reglas de validación
+            'address' => 'required|string|max:255',
         ], [
             'nit.required' => 'El NIT es obligatorio.',
+            'nit.numeric' => 'El NIT debe ser un número.',
             'nit.unique' => 'El NIT ya está registrado.',
+            'supplier_name.required' => 'El nombre del proveedor es obligatorio.',
             'cell_phone.required' => 'El número de teléfono es obligatorio.',
+            'cell_phone.numeric' => 'El número de teléfono debe ser numérico.',
+            'cell_phone.digits' => 'El número de teléfono debe tener 10 dígitos.',
             'cell_phone.unique' => 'El número de teléfono ya está registrado.',
             'mail.required' => 'El correo electrónico es obligatorio.',
             'mail.email' => 'El correo electrónico debe ser una dirección válida.',
             'mail.unique' => 'El correo electrónico ya está registrado.',
-            // otros mensajes de validación
+            'address.required' => 'La dirección es obligatoria.',
         ]);
-    
-        $supplier->update($request->all());
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $supplier->update($input);
 
         return redirect()->route('supplier.index')
             ->with('success', 'Proveedor actualizado con éxito');

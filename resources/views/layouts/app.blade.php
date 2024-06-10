@@ -93,6 +93,13 @@
             text-decoration: none;
             display: block;
         }
+        .dropdown-menu {
+            right: 0; /* Asegura que el menú se alinee a la derecha del contenedor */
+            left: auto; /* Desactiva la alineación a la izquierda */
+        }
+        .show {
+            display: block !important;
+        }
     </style>
 
     <!-- Scripts -->
@@ -124,6 +131,7 @@
                     @else
                     <li class="nav-item active">
                     </li>
+                    <!-- Segundo desplegable -->
                     <li class="nav-item dropdown">
                         <button class="dropdown-btn dropdown-toggle text-white" type="button" aria-haspopup="true" aria-expanded="false" v-pre>
                             <i class="fa-solid fa-user"></i> Personas
@@ -162,12 +170,11 @@
                         <a class="nav-link text-white" href="{{ route('purchase.index') }}"> <i class="fa-solid fa-money-bill-trend-up"></i>{{__('Compras')}}</a>
                     </li> 
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre><i class="bi bi-person-circle"></i>
-                            {{ Auth::user()->name }}
+                        <a id="userDropdown" class="nav-link dropdown-toggle text-white dropdown-btn" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item " href="{{ route('logout') }}" onclick="event.preventDefault();
-                                document.getElementById('logout-form').submit();">
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 {{ __('Cerrar Sesion') }}
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
@@ -223,25 +230,30 @@
         });
     </script>
     <script>
-        document.querySelector('.dropdown-btn').addEventListener('click', function() {
-            this.nextElementSibling.classList.toggle('show');
+    document.querySelectorAll('.dropdown-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            let dropdownMenu = this.nextElementSibling;
+            if (dropdownMenu.classList.contains('dropdown-menu')) {
+                dropdownMenu.classList.toggle('show');
+            }
         });
+    });
 
-        // Ocultar el menú desplegable cuando se hace clic fuera de él
-        window.onclick = function(event) {
-            if (!event.target.matches('.dropdown-btn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-menu");
-                var i;
-                for (i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
+    // Ocultar el menú desplegable cuando se hace clic fuera de él
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-btn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-menu");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
                 }
             }
-        };
+        }
+    };
+</script>
 
-    </script>
 </body>
 
 </html>
