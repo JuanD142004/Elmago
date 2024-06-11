@@ -8,32 +8,31 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        body{
+        body {
             background-image: url('/img/El_mago.jpg');
-            background-size: cover; /* Ajusta la imagen para que cubra todo el fondo */
-            background-position: center; /* Centra la imagen */
-            background-repeat: no-repeat; /* Evita que la imagen se repita */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
-            height: 100vh; /* Ajusta la altura al 100% de la ventana */
-            width: 100vw; /* Ajusta el ancho al 100% de la ventana */
-            overflow-x: hidden; /* Evita el desbordamiento horizontal */
+            height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
         }
 
-
         .card {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-            border: none; /* Sin bordes para la tarjeta */
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
         }
 
         .table {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
+            background-color: rgba(255, 255, 255, 0.8);
         }
+
         .form-container {
             margin: auto;
             margin-top: 20px;
         }
 
-        /* Estilos para la tabla */
         table {
             width: 100%;
         }
@@ -77,6 +76,15 @@
         .remove-product-btn i {
             pointer-events: none;
         }
+
+        .amount {
+            width: 150px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -87,7 +95,6 @@
                 <div class="box box-info padding-1">
                     <div class="box-body">
                         <h2>Formulario de Venta</h2>
-                        <!-- Primer formulario -->
                         <form id="mainForm" action="{{ route('sales.store') }}" method="POST">
                             @csrf
 
@@ -95,6 +102,7 @@
                                 {{ Form::label('customers_id', 'Nombre del Cliente') }}
                                 {{ Form::select('customers_id', $customers->pluck('customer_name', 'id'), null, ['class' => 'form-control' . ($errors->has('customers_id') ? ' is-invalid' : ''), 'placeholder' => 'Selecciona un cliente']) }}
                                 {!! $errors->first('customers_id', '<div class="invalid-feedback">:message</div>') !!}
+                                <span class="error-message customers-error"></span> <!-- Clase específica para el mensaje de error del cliente -->
                             </div>
 
                             <div class="form-group">
@@ -112,6 +120,7 @@
                                     'Crédito' => 'Crédito'
                                 ], null, ['class' => 'form-control' . ($errors->has('payment_method') ? ' is-invalid' : '')]) }}
                                 {!! $errors->first('payment_method', '<div class="invalid-feedback">:message</div>') !!}
+                                <span class="error-message payment-method-error"></span> <!-- Clase específica para el mensaje de error del método de pago -->
                             </div>
 
                             <div class="form-group btn-container">
@@ -133,8 +142,6 @@
                 <div class="box box-info padding-1">
                     <div class="box-body">
                         <h2>Formulario de Detalles de Venta</h2>
-                        <!-- Segundo formulario como tabla -->
-
                         @csrf
                         <div class="table-responsive">
                             <table class="table">
@@ -153,17 +160,21 @@
                                         <td>
                                             {{ Form::select('products_id[]', $products->pluck('product_name', 'id'), null, ['class' => 'form-control products-id', 'placeholder' => 'Selecciona un producto']) }}
                                             {!! $errors->first('products_id', '<div class="invalid-feedback">:message</div>') !!}
+                                            <span class="error-message product-error"></span> <!-- Clase específica para el mensaje de error del producto -->
                                         </td>
                                         <td>
                                             {{ Form::text('price_unit[]', null, ['class' => 'form-control price-unit', 'readonly' => 'readonly']) }}
                                         </td>
                                         <td>
-                                            {{ Form::text('amount[]', null, ['class' => 'form-control amount', 'placeholder' => 'Cantidad', 'oninput' => 'this.value = this.value.replace(/[^0-9]/g, "")']) }}
+                                            {{ Form::number('amount[]', null, ['class' => 'form-control amount', 'placeholder' => 'Cantidad', 'min' => '1', 'max' => '999']) }}
                                             {!! $errors->first('amount', '<div class="invalid-feedback">:message</div>') !!}
+                                            <span class="error-message amount-error"></span> <!-- Clase específica para el mensaje de error de la cantidad -->
                                         </td>
+
                                         <td>
                                             {{ Form::text('discount[]', null, ['class' => 'form-control discount', 'placeholder' => 'Descuento', 'oninput' => 'this.value = this.value.replace(/[^0-9]/g, "")']) }}
                                             {!! $errors->first('discount', '<div class="invalid-feedback">:message</div>') !!}
+                                            <span class="error-message discount-error"></span> <!-- Clase específica para el mensaje de error del descuento -->
                                         </td>
                                         <td>
                                             {{ Form::text('total_price[]', null, ['class' => 'form-control total-price', 'readonly' => 'readonly']) }}
@@ -174,15 +185,11 @@
                                             </button>
                                         </td>
                                     </tr>
-
                                 </tbody>
                             </table>
                         </div>
                         <div class="box-footer mt20">
                             <button type="button" class="btn btn-primary" id="addProductBtn">Agregar Producto</button>
-                            <!-- <a class="btn btn-primary" href="{{ route('details_sale.index') }}">
-                                    <i class="fas fa-chevron-left"></i> {{ __("Atrás") }}
-                                </a> -->
                         </div>
                         </form>
                     </div>
@@ -192,8 +199,6 @@
     </div>
 </body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -305,6 +310,16 @@
                     this.value = value;
                 }
 
+                if (this.classList.contains('amount')) {
+                    // Limit the value to be between 1 and 999
+                    let num = parseInt(this.value);
+                    if (num < 1) {
+                        this.value = '1';
+                    } else if (num > 999) {
+                        this.value = '999';
+                    }
+                }
+
                 if (this.classList.contains('discount') && value === '') {
                     this.value = '$';
                     return;
@@ -334,23 +349,30 @@
                 toggleRemoveButton(this);
             });
 
-            newRow.querySelectorAll('.amount, .discount').forEach(input => {
+            document.querySelectorAll('.amount').forEach(input => {
                 input.addEventListener('input', function() {
                     let value = this.value.trim();
 
-                    if (value === '-') {
+                    // Si el valor ingresado no es un número, se limpia el campo
+                    if (isNaN(value)) {
                         this.value = '';
                         return;
                     }
 
-                    if (value.startsWith('-')) {
-                        value = value.substring(1);
-                        this.value = value;
+                    // Si el valor es menor que 1, se establece como 1
+                    if (parseInt(value) < 1) {
+                        this.value = '1';
+                        return;
                     }
 
-                    updateTotal(newRow);
+                    // Si el valor es mayor que 999, se establece como 999
+                    if (parseInt(value) > 999) {
+                        this.value = '999';
+                        return;
+                    }
                 });
             });
+
 
             addRemoveButtonHandler(newRow);
         });
@@ -360,11 +382,46 @@
     });
 
     function enviarDetalles() {
-        const detalles = [];
+        // Reiniciar los mensajes de error
+        document.querySelectorAll('.error-message').forEach(function(element) {
+            element.textContent = '';
+        });
+
+        let hasError = false;
+
+        // Verificar campos vacíos en el formulario de venta
+        document.querySelectorAll('select[name^="products_id"], input[name^="amount"], input[name^="price_total"], select[name^="customers_id"], select[name^="payment_method"]').forEach(function(element, index) {
+            const value = element.value.trim();
+            if (!value && element.name !== 'discount[]') { // Excluir el campo de descuento
+                const errorMessage = element.closest('.form-group').querySelector('.error-message');
+                errorMessage.textContent = 'Este campo es obligatorio';
+                hasError = true;
+            }
+        });
+
+        if (hasError) {
+            return; // No continuar si hay errores en el formulario de venta
+        }
+
+        // Verificar campos vacíos en el formulario de detalles de venta
+        document.querySelectorAll('select[name^="products_id"], input[name^="price_unit"], input[name^="amount"], input[name^="discount"], input[name^="total_price"]').forEach(function(element) {
+            const value = element.value.trim();
+            if (!value && element.name !== 'discount[]') { // Excluir el campo de descuento
+                const errorMessage = element.closest('tr').querySelector('.error-message');
+                errorMessage.textContent = 'Este campo es obligatorio';
+                hasError = true;
+            }
+        });
+
+        if (hasError) {
+            return; // No continuar si hay errores en el formulario de detalles de venta
+        }
+
         const customerId = document.querySelector('select[name="customers_id"]').value;
         const priceTotal = document.querySelector('input[name="price_total"]').value.replace(/[^\d]/g, ''); // Remover formateo
         const paymentMethod = document.querySelector('select[name="payment_method"]').value;
 
+        const detalles = [];
         document.querySelectorAll('select[name^="products_id"]').forEach((select, index) => {
             const productId = select.value;
             const priceUnit = document.querySelectorAll('input[name^="price_unit"]')[index].value.replace(/[^\d]/g, ''); // Remover formateo
@@ -404,7 +461,5 @@
         });
     }
 </script>
-
-</body>
 
 </html>
