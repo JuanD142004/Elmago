@@ -40,14 +40,14 @@
     <div class="box-body">
     <div class="container">
         <div class="form-group">
-            <label for="product_name">{{ __('Nombre del Producto') }}</label>
-            <input type="text" name="product_name" class="form-control @error('product_name') is-invalid @enderror" value="{{ old('product_name', $product?->product_name) }}" id="product_name" placeholder="Nombre del Producto">
-            {!! $errors->first('product_name', '<div class="invalid-feedback">El Nombre del producto es Obligatorio</div>') !!}
+            <label for="product_name_and_brand">{{ __('Nombre y marca del Producto') }}</label>
+            <input type="text" name="product_name_and_brand" class="form-control @error('product_name_and_brand') is-invalid @enderror" value="{{ old('product_name_and_brand') }}" id="product_name_and_brand" placeholder="Nombre del Producto">
+            {!! $errors->first('product_name_and_brand', '<div class="invalid-feedback">El Nombre del producto es Obligatorio</div>') !!}
         </div>
         <div class="form-group">
-            <label for="brand">{{ __('Marca') }}</label>
-            <input type="text" name="brand" class="form-control @error('brand') is-invalid @enderror" value="{{ old('brand', $product?->brand) }}" id="brand" placeholder="Marca">
-            {!! $errors->first('brand', '<div class="invalid-feedback">La Marca es Obligatoria</div>') !!}
+            <label for="product_description">{{ __('Descripcion') }}</label>
+            <input type="text" name="product_description" class="form-control @error('product_description') is-invalid @enderror" value="{{ old('product_description', $product?->product_description) }}" id="product_description" placeholder="Descripcion del producto">
+            {!! $errors->first('product_description', '<div class="invalid-feedback">La Descripcion es Obligatoria</div>') !!}
         </div>
         <div class="form-group">
             <label for="price_unit">{{ __('Precio unitario') }}</label>
@@ -72,18 +72,6 @@
                 }
             }
         </script>
-        <div class="form-group">
-            <label for="unit_of_measurement">{{ __('Unidad de Medida') }}</label>
-            <select name="unit_of_measurement" class="form-control @error('unit_of_measurement') is-invalid @enderror" id="unit_of_measurement">
-                <option value="">Selecciona la Unidad de Medida</option>
-                <option value="Tonelada" {{ old('unit_of_measurement', $product?->unit_of_measurement) == 'Tonelada' ? 'selected' : '' }}>Tonelada(1000kg)</option>
-                <option value="Bulto" {{ old('unit_of_measurement', $product?->unit_of_measurement) == 'Bulto' ? 'selected' : '' }}>Bulto(40kg)</option>
-                <option value="Kilogramo" {{ old('unit_of_measurement', $product?->unit_of_measurement) == 'Kilogramo' ? 'selected' : '' }}>Kilogramo</option>
-                <1option value="Libra" {{ old('unit_of_measurement', $product?->unit_of_measurement) == 'Libra' ? 'selected' : '' }}>Libra</1option>
-                <option value="Caja" {{ old('unit_of_measurement', $product?->unit_of_measurement) == 'Caja' ? 'selected' : '' }}>Caja(25Kg)</option>
-            </select>
-            {!! $errors->first('unit_of_measurement', '<div class="invalid-feedback">Selecciona una Unidad de Medida</div>') !!}
-        </div>
         <div class="form-group">
             <label for="stock">{{ __('Stock') }}</label>
             <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product?->stock) }}" id="stock" placeholder="Ingrese la cantidad de existencias">

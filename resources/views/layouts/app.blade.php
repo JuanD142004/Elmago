@@ -216,10 +216,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const passwordField = document.querySelector('#password');
             const togglePassword = document.querySelector('.toggle-password');
-            togglePassword.addEventListener('click', function() {
-                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordField.setAttribute('type', type);
-            });
+            
+            if (passwordField && togglePassword) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+                });
+            }
         });
     </script>
     <script>
