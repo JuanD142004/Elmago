@@ -85,6 +85,11 @@
             {!! $errors->first('unit_of_measurement', '<div class="invalid-feedback">Selecciona una Unidad de Medida</div>') !!}
         </div>
         <div class="form-group">
+            <label for="stock">{{ __('Stock') }}</label>
+            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product?->stock) }}" id="stock" placeholder="Ingrese la cantidad de existencias">
+            {!! $errors->first('stock', '<div class="invalid-feedback">Este campo es Obligatorio</div>') !!}
+        </div>
+        <div class="form-group">
             <label for="suppliers_id">{{ __('Proveedor') }}</label>
             <select name="suppliers_id" class="form-control @error('suppliers_id') is-invalid @enderror" id="suppliers_id">
                 <option value="">Selecciona el Proveedor</option>

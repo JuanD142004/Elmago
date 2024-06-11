@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('brand', 45);
             $table->string('price_unit', 45);
             $table->string('unit_of_measurement', 45);
-            $table->integer('suppliers_id')->index('fk_products_suppliers1_idx');
+            $table->integer('stock')->default(0); // Agregar valor predeterminado de 0            $table->integer('suppliers_id')->index('fk_products_suppliers1_idx');
             $table->string('created_at', 45)->nullable();
             $table->string('updated_at', 45)->nullable();
             $table->tinyInteger('enabled')->nullable();

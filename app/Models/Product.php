@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property $brand
  * @property $price_unit
  * @property $unit_of_measurement
+ * @property $stock
  * @property $suppliers_id
  * @property $created_at
  * @property $updated_at
@@ -34,7 +35,7 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['product_name', 'brand', 'price_unit', 'unit_of_measurement', 'suppliers_id','enabled'];
+    protected $fillable = ['product_name', 'brand', 'price_unit', 'unit_of_measurement', 'stock','suppliers_id','enabled'];
     protected $attributes = [
         'enabled' => true,
     ];
