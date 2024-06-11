@@ -57,7 +57,7 @@
         </a>
       </li>
       <li>
-        <a class="nav-link" href="{{ route('truck_type.index') }}">{{ __('Tipo de Camión') }}</a>
+        <a class="nav-link" href="{{ route('truck_type.index') }}">{{ __('Tipo de Camion') }}</a>
         </a>
       </li>
       <li>
