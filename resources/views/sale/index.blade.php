@@ -14,181 +14,193 @@ Venta
 <!-- DataTable de reportes -->
 <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
 <body>
 
   <style>
-    body{
+    body {
       background-image: url('/img/El_mago.jpg');
-      background-size: cover; /* Ajusta la imagen para que cubra todo el fondo */
-      background-position: center; /* Centra la imagen */
-      background-repeat: no-repeat; /* Evita que la imagen se repita */
+      background-size: cover;
+      /* Ajusta la imagen para que cubra todo el fondo */
+      background-position: center;
+      /* Centra la imagen */
+      background-repeat: no-repeat;
+      /* Evita que la imagen se repita */
       background-attachment: fixed;
-      height: 100vh; /* Ajusta la altura al 100% de la ventana */
-      width: 100vw; /* Ajusta el ancho al 100% de la ventana */
-      overflow-x: hidden; /* Evita el desbordamiento horizontal */
-      }
+      height: 100vh;
+      /* Ajusta la altura al 100% de la ventana */
+      width: 100vw;
+      /* Ajusta el ancho al 100% de la ventana */
+      overflow-x: hidden;
+      /* Evita el desbordamiento horizontal */
+    }
 
+    .card {
+      background-color: rgba(255, 255, 255, 0.8);
+      /* Fondo blanco con 80% de opacidad */
+      border: none;
+      /* Sin bordes para la tarjeta */
+    }
 
-      .card {
-          background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-          border: none; /* Sin bordes para la tarjeta */
-      }
+    .table {
+      background-color: rgba(255, 255, 255, 0.8);
+      /* Fondo blanco con 80% de opacidad */
+    }
 
-      .table {
-          background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-      }
     .btn-dark-blue {
-            background-color: #004085;
-            border-color: #003768;
-            color: #fff;
-        }
+      background-color: #004085;
+      border-color: #003768;
+      color: #fff;
+    }
 
-        .btn-dark-blue:hover,
-        .btn-dark-blue:focus,
-        .btn-dark-blue:active {
-            background-color: #004085;
-            border-color: #003768;
-            color: #fff;
-            opacity: 1;
-        }
+    .btn-dark-blue:hover,
+    .btn-dark-blue:focus,
+    .btn-dark-blue:active {
+      background-color: #004085;
+      border-color: #003768;
+      color: #fff;
+      opacity: 1;
+    }
 
-        .btn-dark-blue.enabled, 
-        .btn-dark-blue:enabled {
-            background-color: #004085;
-            border-color: #003768;
-            opacity: 0.65;
-        }
+    .btn-dark-blue.enabled,
+    .btn-dark-blue:enabled {
+      background-color: #004085;
+      border-color: #003768;
+      opacity: 0.65;
+    }
   </style>
   <style>
     /* Estilos personalizados para los botones de exportación */
     .dt-buttons .btn {
-        font-size: 14px; /* Aumenta el tamaño de la fuente */
-        padding: 9px 24px; /* Aumenta el rellenado (padding) */
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
+      font-size: 14px;
+      /* Aumenta el tamaño de la fuente */
+      padding: 9px 24px;
+      /* Aumenta el rellenado (padding) */
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
     }
-    
+
     .dt-buttons .btn-success {
-        background-color: #28a745;
-        color: #fff;
-        border: none;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
     }
-    
+
     .dt-buttons .btn-danger {
-        background-color: #dc3545;
-        color: #fff;
-        border: none;
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
     }
-    
+
     .dt-buttons .btn-info {
-        background-color: #17a2b8;
-        color: #fff;
-        border: none;
+      background-color: #17a2b8;
+      color: #fff;
+      border: none;
     }
-    
+
     .dt-buttons .btn:hover {
-        opacity: 0.8;
+      opacity: 0.8;
     }
-    
+
     .dt-buttons .btn:focus {
-        outline: none;
-        box-shadow: none;
+      outline: none;
+      box-shadow: none;
     }
-    
+
     /* Estilos adicionales para ajustar el espaciado y la alineación */
     .dataTables_wrapper .dt-buttons {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 20px;
     }
+
     .dataTables_wrapper .dt-buttons .btn {
-        background-color: #1e3a5e !important;
-        border-color: #1e3a5e !important;
-        color: white !important;
+      background-color: #1e3a5e !important;
+      border-color: #1e3a5e !important;
+      color: white !important;
     }
-    
+
     .dataTables_wrapper .dt-buttons .btn:hover {
-        background-color: #143755 !important;
-        border-color: #143755 !important;
+      background-color: #143755 !important;
+      border-color: #143755 !important;
     }
-    
+
     .dataTables_wrapper .dt-buttons .btn i {
-        margin-right: 5px;
+      margin-right: 5px;
     }
-    </style>
+  </style>
 
-
-
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="card">
-        <div class="card-header">
-          <div class="d-flex justify-content-between align-items-center">
-            <span id="card_title">{{ __('Ventas') }}</span>
-            <div class="float-right">
-              <a href="{{ route('sales.create') }}" class="btn btn-dark text-white btn-sm float-right" data-placement="left">
-                <i class="fas fa-plus"></i> {{ __('Crear Nuevo') }}
-              </a>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <span id="card_title">{{ __('Ventas') }}</span>
+              <div class="float-right">
+                <a href="{{ route('sales.create') }}" class="btn btn-dark text-white btn-sm float-right" data-placement="left">
+                  <i class="fas fa-plus"></i> {{ __('Crear Nuevo') }}
+                </a>
+              </div>
             </div>
+            @if ($message = Session::get('success'))
+            <div class="alert alert-success mt-3">
+              <p>{{ $message }}</p>
+            </div>
+            @endif
           </div>
-          @if ($message = Session::get('success'))
-          <div class="alert alert-success mt-3">
-            <p>{{ $message }}</p>
-          </div>
-          @endif
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table id="salesTable" class="table table-striped table-hover dataTable">
-              <thead class="thead-light">
-                <tr>
-                  <th>No</th>
-                  <th>Cliente</th>
-                  <th>Total Precio</th>
-                  <th>Método de Pago</th>
-                  <th>Mostrar</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($sales as $sale)
-                <tr>
-                  <td>{{ $sale->id }}</td>
-                  <td>{{ $sale->customer->id }} - {{ $sale->customer->customer_name }}</td>
-                  <td>{{ $sale->price_total }}</td>
-                  <td>{{ $sale->payment_method }}</td>
-                  <td class="d-print-none">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table id="salesTable" class="table table-striped table-hover dataTable">
+                <thead class="thead-light">
+                  <tr>
+                    <th>No</th>
+                    <th>Cliente</th>
+                    <th>Total Precio</th>
+                    <th>Método de Pago</th>
+                    <th>Mostrar</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach ($sales as $sale)
+                  <tr>
+                    <td>{{ $sale->id }}</td>
+                    <td>{{ $sale->customer->id }} - {{ $sale->customer->customer_name }}</td>
+                    <td>${{ number_format($sale->price_total, 2, '.', ',') }}</td>
+                    <td>{{ $sale->payment_method }}</td>
+                    <td class="d-print-none">
                       <a class="btn btn-sm btn-dark-blue" href="{{ route('sales.show', $sale->id) }}" {{ $sale->enabled ? '' : 'disabled' }}>
-                          <i class="fa fa-fw fa-eye"></i> {{ __('Mostrar') }}
+                        <i class="fa fa-fw fa-eye"></i> {{ __('Mostrar') }}
                       </a>
-                  </td>
-                  <td>
+                    </td>
+                    <td>
                       @if($sale->enabled)
-                          <button type="button" id="toggle-button-{{ $sale->id }}" class="btn btn-sm btn-success" onclick="toggleSaleStatus('{{ $sale->id }}', {{ $sale->enabled ? 'false' : 'true' }})">
-                              <i class="fa fa-fw fa-ban"></i> {{ __('Anular') }}
-                          </button>
+                      <button type="button" id="toggle-button-{{ $sale->id }}" class="btn btn-sm btn-success" onclick="toggleSaleStatus('{{ $sale->id }}', {{ $sale->enabled ? 'false' : 'true' }})">
+                        <i class="fa fa-fw fa-ban"></i> {{ __('Anular') }}
+                      </button>
                       @else
-                          <button type="button" id="toggle-button-{{ $sale->id }}" class="btn btn-sm btn-warning" disabled>
-                              <i class="fa fa-fw fa-times-circle"></i> {{ __('Anulado') }}
-                          </button>
+                      <button type="button" id="toggle-button-{{ $sale->id }}" class="btn btn-sm btn-warning" disabled>
+                        <i class="fa fa-fw fa-times-circle"></i> {{ __('Anulado') }}
+                      </button>
                       @endif
                       <form id="toggle-form-{{ $sale->id }}" action="{{ route('sales.toggle', $sale->id) }}" method="POST" style="display: none;">
-                          @csrf
-                          @method('PUT')
+                        @csrf
+                        @method('PUT')
                       </form>
-                  </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
+                    </td>
+                  </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -207,72 +219,95 @@ Venta
   <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js" defer></script>
   <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js" defer></script>
   <script src="{{ asset('js/app.js') }}" defer></script>
-
-<script>
-  $(document).ready(function() {
-    $('#salesTable').DataTable({
+  <script>
+    $(document).ready(function() {
+      $('#salesTable').DataTable({
         responsive: true,
         language: {
-            "sProcessing": "Procesando...",
-            "sLengthMenu": "Mostrar _MENU_ registros",
-            "sZeroRecords": "No se encontraron resultados",
-            "sEmptyTable": "Ningún dato disponible en esta tabla",
-            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-            "sSearch": "Buscar:",
-            "oPaginate": {
-                "sFirst": "Primero",
-                "sLast": "Último",
-                "sNext": "Siguiente",
-                "sPrevious": "Anterior"
-            },
-            "oAria": {
-                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-            },
-            "buttons": {
-                "copy": "Copiar",
-                "colvis": "Visibilidad"
-            }
+          "sProcessing": "Procesando...",
+          "sLengthMenu": "Mostrar _MENU_ registros",
+          "sZeroRecords": "No se encontraron resultados",
+          "sEmptyTable": "Ningún dato disponible en esta tabla",
+          "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+          "sSearch": "Buscar:",
+          "oPaginate": {
+            "sFirst": "Primero",
+            "sLast": "Último",
+            "sNext": "Siguiente",
+            "sPrevious": "Anterior"
+          },
+          "oAria": {
+            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+            "copy": "Copiar",
+            "colvis": "Visibilidad"
+          }
         },
         dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'excel',
-                text: '<i class="fas fa-file-excel"></i>',
-                titleAttr: 'Exportar a Excel',
-                title: 'Distribuciones El Mago Proveedores',
-                className: 'btn btn-success',
-                exportOptions: {
-                    columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
-                }
-            },
-            {
-                extend: 'pdf',
-                text: '<i class="fas fa-file-pdf"></i>',
-                titleAttr: 'Exportar a PDF',
-                title: 'Distribuciones El Mago Proveedores',
-                className: 'btn btn-danger',
-                exportOptions: {
-                    columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
-                }
-            },
-            {
-                extend: 'print',
-                text: '<i class="fas fa-print"></i>',
-                titleAttr: 'Imprimir',
-                title:'Distribuciones El Mago Proveedores',
-                className: 'btn btn-info',
-                exportOptions: {
-                    columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
-                }
+        buttons: [{
+            extend: 'excel',
+            text: '<i class="fas fa-file-excel"></i>',
+            titleAttr: 'Exportar a Excel',
+            title: 'Distribuciones El Mago Proveedores',
+            className: 'btn btn-success',
+            exportOptions: {
+              columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
             }
-            
+          },
+          {
+            extend: 'pdf',
+            text: '<i class="fas fa-file-pdf"></i>',
+            titleAttr: 'Exportar a PDF',
+            title: 'Distribuciones El Mago Proveedores',
+            className: 'btn btn-danger',
+            exportOptions: {
+              columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
+            }
+          },
+          {
+            extend: 'print',
+            text: '<i class="fas fa-print"></i>',
+            titleAttr: 'Imprimir',
+            title: 'Distribuciones El Mago Proveedores',
+            className: 'btn btn-info',
+            exportOptions: {
+              columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
+            }
+          }
         ]
+      });
+
+      sortSalesTable(); // Llama a la función para ordenar la tabla después de inicializarla
     });
-});
-   window.toggleSaleStatus = function(saleId, status) {
+
+    function sortSalesTable() {
+      var tbody = document.querySelector('#salesTable tbody');
+      var rows = Array.from(tbody.getElementsByTagName('tr'));
+
+      rows.sort((a, b) => {
+        var aStatus = getStatusValue(a.cells[5].innerText); // Obtener el valor numérico del estado de la venta
+        var bStatus = getStatusValue(b.cells[5].innerText); // Obtener el valor numérico del estado de la venta
+        return aStatus - bStatus;
+      });
+
+      rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Función para obtener el valor numérico del estado de la venta
+    function getStatusValue(status) {
+      if (status.trim().toLowerCase() === 'anulado') {
+        return 1; // Ventas anuladas tendrán un valor mayor
+      } else {
+        return 0; // Ventas no anuladas tendrán un valor menor
+      }
+    }
+
+    // Función para cambiar el estado de la venta
+    window.toggleSaleStatus = function(saleId, status) {
       var form = document.getElementById('toggle-form-' + saleId);
       var action = status ? 'Anular' : 'Anulado';
 
@@ -291,20 +326,5 @@ Venta
         }
       });
     };
-  
-
-  function sortSalesTable() {
-    var tbody = document.getElementById('salesTableBody');
-    var rows = Array.from(tbody.getElementsByTagName('tr'));
-
-    rows.sort((a, b) => {
-      var aStatus = parseInt(a.cells[5].innerText);
-      var bStatus = parseInt(b.cells[5].innerText);
-      return bStatus - aStatus;
-    });
-
-    rows.forEach(row => tbody.appendChild(row));
-  }
-</script>
-
-@endsection
+  </script>
+  @endsection
