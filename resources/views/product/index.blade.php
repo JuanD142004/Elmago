@@ -127,10 +127,9 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nombre del Producto</th>
-                                    <th>Marca</th>
+                                    <th>Nombre y Marca del Producto</th>
+                                    <th>Descripcion del producto</th>
                                     <th>Precio unitario</th>
-                                    <th>Unidad de medida</th>
                                     <th>Stock</th>
                                     <th>Proveedores</th>
                                     <th>Estado</th>
@@ -141,10 +140,9 @@
                                 @foreach ($products as $product)
                                 <tr>
                                     <td>{{ ++$i }}</td>
-                                    <td>{{ $product->product_name }}</td>
-                                    <td>{{ $product->brand }}</td>
+                                    <td>{{ $product->product_name_and_brand}}</td>
+                                    <td>{{ $product->product_description }}</td>
                                     <td>{{ $product->price_unit }}</td>
-                                    <td>{{ $product->unit_of_measurement }}</td>
                                     <td class="text-center" id="exitencia">{{ $product->stock }}</td>
                                     <td>{{ $product->supplier->supplier_name }}</td>
                                     <td>

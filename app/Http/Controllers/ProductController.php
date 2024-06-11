@@ -20,15 +20,13 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $busqueda = $request->busqueda;
-        $products = Product::where('product_name', 'LIKE', '%' . $busqueda . '%')
-                                ->orWhere('brand', 'LIKE', '%' . $busqueda . '%')
-                                ->orderBy('id', 'asc')
-                                ->paginate();
-    
+        $products = Product::where('product_name_and_brand', 'LIKE', '%' . $busqueda . '%')
+                            ->orderBy('id', 'asc')
+                            ->paginate();
+        
         return view('product.index', compact('products', 'busqueda'))
             ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
     }
-    
 
     /**
      * Show the form for creating a new resource.
@@ -37,7 +35,7 @@ class ProductController extends Controller
     {
         $product = new Product();
         $suppliers = Supplier::all();
-        return view('product.create', compact('product','suppliers'));
+        return view('product.create', compact('product', 'suppliers'));
     }
 
     /**
@@ -45,30 +43,10 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $request->validate([
-            'product_name' => 'required|unique:products,product_name',
-            'brand' => 'required',
-            'price_unit' => 'required|required',
-            'unit_of_measurement' => 'required',
-            'stock' => 'required|integer|min:0',
-            'suppliers_id' => 'required|exists:suppliers,id',
-            // otras reglas de validación
-        ], [
-            'brand.required' => 'La marca es obligatoria.',
-            'price_unit.required' => 'El precio unitario es obligatorio.',
-            'unit_of_measurement.required' => 'La unidad de medida es obligatoria.',
-            'stock.required' => 'La cantidad de existencias es obligatoria.',
-            'stock.integer' => 'La cantidad de existencias debe ser un número entero.',
-            'stock.min' => 'La cantidad de existencias no puede ser negativa.',
-            'suppliers_id.required' => 'El proveedor es obligatorio.',
-            'suppliers_id.exists' => 'El proveedor seleccionado no es válido.',
-            // otros mensajes de validación
-        ]);
-
-        $product = Product::create($request->all());
+        Product::create($request->validated());
         return redirect()->route('product.index')
             ->with('success', 'Producto creado con éxito.');
-    }
+    } 
 
     /**
      * Display the specified resource.
