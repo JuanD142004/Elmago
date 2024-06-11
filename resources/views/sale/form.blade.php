@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario Mejorado</title>
@@ -385,8 +386,28 @@
             payment_method: paymentMethod,
             detalles: detalles
         };
+                // Utiliza ajaxPrefilter para interceptar todas las solicitudes AJAX
+        $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+            // Modifica el manejador de errores de la solicitud
+            options.error = function(jqXHR, textStatus, errorThrown) {
+                // Intenta obtener el mensaje de error del servidor
+                var errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.error? jqXHR.responseJSON.error : "Ocurrió un error desconocido.";
 
-        // Perform the AJAX request
+                // Muestra una alerta con el mensaje de error específico
+                if (errorMessage === 'El producto seleccionado no tiene stock suficiente.') {
+                    alert(errorMessage); // Muestra una alerta con el mensaje de error
+                } else {
+                    // Para otros errores, simplemente registra el error en la consola
+                    console.error(textStatus, errorThrown);
+                }
+            };
+
+            // Continúa con la solicitud original
+            return true;
+        });
+
+
+            // Perform the AJAX request
         $.ajax({
             type: "POST",
             url: "{{ route('sales.store') }}",
@@ -398,8 +419,17 @@
                 console.log(response);
                 window.location.href = "{{ route('sales.index') }}";
             },
-            error: function(err) {
-                console.error(err);
+            error: function(xhr, status, error) {
+                // Intenta obtener el mensaje de error del servidor
+                var errorMessage = xhr.responseJSON && xhr.responseJSON.error? xhr.responseJSON.error : "Ocurrió un error desconocido.";
+
+                // Muestra una alerta con el mensaje de error específico
+                if (errorMessage === 'El producto seleccionado no tiene stock suficiente.') {
+                    alert(errorMessage);
+                } else {
+                    // Para otros errores, simplemente registra el error en la consola
+                    console.error(error);
+                }
             }
         });
     }

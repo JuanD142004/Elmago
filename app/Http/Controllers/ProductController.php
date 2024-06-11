@@ -50,13 +50,16 @@ class ProductController extends Controller
             'brand' => 'required',
             'price_unit' => 'required|required',
             'unit_of_measurement' => 'required',
+            'stock' => 'required|integer|min:0',
             'suppliers_id' => 'required|exists:suppliers,id',
             // otras reglas de validación
         ], [
-            'product_name.required' => 'El nombre del producto es obligatorio.',
             'brand.required' => 'La marca es obligatoria.',
             'price_unit.required' => 'El precio unitario es obligatorio.',
             'unit_of_measurement.required' => 'La unidad de medida es obligatoria.',
+            'stock.required' => 'La cantidad de existencias es obligatoria.',
+            'stock.integer' => 'La cantidad de existencias debe ser un número entero.',
+            'stock.min' => 'La cantidad de existencias no puede ser negativa.',
             'suppliers_id.required' => 'El proveedor es obligatorio.',
             'suppliers_id.exists' => 'El proveedor seleccionado no es válido.',
             // otros mensajes de validación

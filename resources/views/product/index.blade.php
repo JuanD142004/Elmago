@@ -94,6 +94,11 @@
         .dataTables_wrapper .dt-buttons .btn i {
             margin-right: 5px;
         }
+         /* Estilo para la columna de stock */
+         #exitencia {
+            background-color: rgb(6, 28, 65);
+            color: white;
+        }
         </style>
 <div class="container-fluid">
    <div class="row">
@@ -126,6 +131,7 @@
                                     <th>Marca</th>
                                     <th>Precio unitario</th>
                                     <th>Unidad de medida</th>
+                                    <th>Stock</th>
                                     <th>Proveedores</th>
                                     <th>Estado</th>
                                     <th></th>
@@ -139,6 +145,7 @@
                                     <td>{{ $product->brand }}</td>
                                     <td>{{ $product->price_unit }}</td>
                                     <td>{{ $product->unit_of_measurement }}</td>
+                                    <td class="text-center" id="exitencia">{{ $product->stock }}</td>
                                     <td>{{ $product->supplier->supplier_name }}</td>
                                     <td>
                                         <form id="toggle-form-{{ $product->id }}" action="{{ route('product.update_status', $product->id) }}" method="POST">
