@@ -9,65 +9,74 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-    <style>
-        body{
-            background-image: url('/img/El_mago.jpg');
-            background-size: cover; /* Ajusta la imagen para que cubra todo el fondo */
-            background-position: center; /* Centra la imagen */
-            background-repeat: no-repeat; /* Evita que la imagen se repita */
-            background-attachment: fixed;
-            height: 100vh; /* Ajusta la altura al 100% de la ventana */
-            width: 100vw; /* Ajusta el ancho al 100% de la ventana */
-            overflow-x: hidden; /* Evita el desbordamiento horizontal */
-        }
+<style>
+    body {
+        background-image: url('/img/El_mago.jpg');
+        background-size: cover;
+        /* Ajusta la imagen para que cubra todo el fondo */
+        background-position: center;
+        /* Centra la imagen */
+        background-repeat: no-repeat;
+        /* Evita que la imagen se repita */
+        background-attachment: fixed;
+        height: 100vh;
+        /* Ajusta la altura al 100% de la ventana */
+        width: 100vw;
+        /* Ajusta el ancho al 100% de la ventana */
+        overflow-x: hidden;
+        /* Evita el desbordamiento horizontal */
+    }
 
+    .card {
+        background-color: rgba(255, 255, 255, 0.8);
+        /* Fondo blanco con 80% de opacidad */
+        border: none;
+        /* Sin bordes para la tarjeta */
+    }
 
-        .card {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-            border: none; /* Sin bordes para la tarjeta */
-        }
+    .table {
+        background-color: rgba(255, 255, 255, 0.8);
+        /* Fondo blanco con 80% de opacidad */
+    }
 
-        .table {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-        }
-        .card {
-            width: 100%;
-            margin: auto;
-        }
+    .card {
+        width: 100%;
+        margin: auto;
+    }
 
-        .card-header h4 {
-            font-size: 1.5rem;
-        }
+    .card-header h4 {
+        font-size: 1.5rem;
+    }
 
-        .btn-primary {
-            font-size: 1.2rem;
-        }
+    .btn-primary {
+        font-size: 1.2rem;
+    }
 
-        .table th,
-        .table td {
-            font-size: 1.1rem;
-        }
+    .table th,
+    .table td {
+        font-size: 1.1rem;
+    }
 
-        .alert {
-            font-size: 1.1rem;
-            color: #856404;
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-        }
+    .alert {
+        font-size: 1.1rem;
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
 
-        h5 {
-            font-size: 1.3rem;
-        }
+    h5 {
+        font-size: 1.3rem;
+    }
 
-        .details-table-container {
-            margin-top: 20px;
-        }
+    .details-table-container {
+        margin-top: 20px;
+    }
 
-        .table-details th,
-        .table-details td {
-            padding: 15px;
-        }
-    </style>
+    .table-details th,
+    .table-details td {
+        padding: 15px;
+    }
+</style>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -102,7 +111,7 @@
                                         </tr>
                                         <tr>
                                             <th>{{ __("Total Precio") }}</th>
-                                            <td>{{ $sale->price_total }}</td>
+                                            <td>${{ number_format($sale->price_total, 2, '.', ',') }}</td>
                                         </tr>
                                         <tr>
                                             <th>{{ __("Método de Pago") }}</th>
@@ -129,9 +138,9 @@
                                         @foreach($sale->detailsSales as $index => $detailsSale)
                                         <tr class="{{ $index % 2 === 0 ? 'even' : 'odd' }}">
                                             <td>{{ $detailsSale->product->product_name ?? 'N/A' }}</td>
-                                            <td>{{ $detailsSale->price_unit }}</td>
+                                            <td>${{ number_format($detailsSale->price_unit, 2, '.', ',') }}</td>
                                             <td>{{ $detailsSale->amount }}</td>
-                                            <td>{{ $detailsSale->discount }}</td>
+                                            <td>{{ number_format($detailsSale->discount, 2, '.', ',') }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>

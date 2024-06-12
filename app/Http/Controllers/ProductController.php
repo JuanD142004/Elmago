@@ -27,15 +27,13 @@ class ProductController extends Controller
             $query->where('enabled', true);
         })->with('supplier')->get();
         $busqueda = $request->busqueda;
-        $products = Product::where('product_name', 'LIKE', '%' . $busqueda . '%')
-                                ->orWhere('brand', 'LIKE', '%' . $busqueda . '%')
-                                ->orderBy('id', 'asc')
-                                ->paginate();
-    
+        $products = Product::where('product_name_and_brand', 'LIKE', '%' . $busqueda . '%')
+                            ->orderBy('id', 'asc')
+                            ->paginate();
+        
         return view('product.index', compact('products', 'busqueda'))
             ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
     }
-    
 
     /**
      * Show the form for creating a new resource.
@@ -44,7 +42,7 @@ class ProductController extends Controller
     {
         $product = new Product();
         $suppliers = Supplier::all();
-        return view('product.create', compact('product','suppliers'));
+        return view('product.create', compact('product', 'suppliers'));
     }
 
     /**
@@ -72,7 +70,7 @@ class ProductController extends Controller
         $product = Product::create($request->all());
         return redirect()->route('product.index')
             ->with('success', 'Producto creado con éxito.');
-    }
+    } 
 
     /**
      * Display the specified resource.
