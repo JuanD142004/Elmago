@@ -19,16 +19,21 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+
+        $products = Product::enabledSupplier()->with('supplier')->get();
+
+        // Obtener productos que están asociados a proveedores habilitados
+        $products = Product::whereHas('supplier', function ($query) {
+            $query->where('enabled', true);
+        })->with('supplier')->get();
         $busqueda = $request->busqueda;
         $products = Product::where('product_name_and_brand', 'LIKE', '%' . $busqueda . '%')
-            ->orWhere('brand', 'LIKE', '%' . $busqueda . '%')
-            ->orderBy('id', 'asc')
-            ->paginate();
-
+                            ->orderBy('id', 'asc')
+                            ->paginate();
+        
         return view('product.index', compact('products', 'busqueda'))
             ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -46,7 +51,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $request->validate([
-            'product_name_and_brand' => 'required|unique:products,product_name',
+            'product_name' => 'required|required',
             'brand' => 'required',
             'price_unit' => 'required|required',
             'unit_of_measurement' => 'required',
@@ -63,10 +68,12 @@ class ProductController extends Controller
         ]);
 
         $product = Product::create($request->all());
+        $data = $request->validated();
+        $data['stock'] = 0; // Asegurar que el stock inicial es 0
+        Product::create($data);
         return redirect()->route('product.index')
             ->with('success', 'Producto creado con éxito.');
     }
-
     /**
      * Display the specified resource.
      */

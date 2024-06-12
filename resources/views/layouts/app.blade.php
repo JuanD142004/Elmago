@@ -67,10 +67,44 @@
             overflow-y: auto; /* Permite el scroll vertical si es necesario */
             padding-bottom: 80px; /* Altura del footer para evitar solapamiento */
         }
+        .dropdown-btn {
+            cursor: pointer;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            outline: none;
+            color: white;
+            background-color: transparent; /* Color de la barra de navegación */
+            width: 100%; /* Ajusta el ancho para llenar el espacio disponible */
+        }
+
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-menu li a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-menu {
+            right: 0; /* Asegura que el menú se alinee a la derecha del contenedor */
+            left: auto; /* Desactiva la alineación a la izquierda */
+        }
+        .show {
+            display: block !important;
+        }
     </style>
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+  
 </head>
 
 <body>
@@ -98,16 +132,19 @@
                     @else
                     <li class="nav-item active">
                     </li>
+                    <!-- Segundo desplegable -->
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre><i class="fa-solid fa-user"></i> {{ __('Personas') }}
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" "text-dark" href="{{ route('supplier.index') }}">{{ __('Proveedores') }}</a>
-                            <a class="dropdown-item" "text-dark" href="{{ route('employee.index') }}">{{ __('Empleados') }}</a>
-                            {{--  <a class="dropdown-item" "text-dark" href="{{ route('user.index') }}">{{ __('Usuarios') }}</a>  --}}
-                            <a class="dropdown-item" "text-dark" href="{{route('customer.index')}}">{{__('Clientes')}}</a>
-                        </div>
+                        <button class="dropdown-btn dropdown-toggle text-white" type="button" aria-haspopup="true" aria-expanded="false" v-pre>
+                            <i class="fa-solid fa-user"></i> Personas
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item text-dark" href="{{ route('supplier.index') }}">Proveedores</a></li>
+                            <li><a class="dropdown-item text-dark" href="{{ route('employee.index') }}">Empleados</a></li>
+                            <!-- <li><a class="dropdown-item text-dark" href="{{ route('user.index') }}">Usuarios</a></li> -->
+                            <li><a class="dropdown-item text-dark" href="{{ route('customer.index') }}">Clientes</a></li>
+                        </ul>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ route('product.index') }}"><i class="fa-solid fa-folder-open"></i>{{ __('Productos') }}</a>
                     </li>
@@ -118,13 +155,14 @@
                         <a class="nav-link text-white" href="{{route('load.index')}}"><i class="fa-solid fa-truck-arrow-right"></i>{{__('Carga')}}</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre><i class="fa-solid fa-road"></i> {{ __('Rutas') }}
+                        {{--  <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre><i class="fa-solid fa-road"></i> {{ __('Rutas') }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" text-dark" href="{{ route('route.index') }}">{{ __('Generar Rutas') }}</a>
                             <a class="dropdown-item" "text-dark" href="{{ route('departament.index') }}">{{ __('Departamentos') }}</a>
                             <a class="dropdown-item" text-dark" href="{{ route('municipality.index') }}">{{ __('Municipios') }}</a>
-                        </div>
+                        </div>  --}}
+                        <a class="nav-link text-white" href="{{ route('route.index') }}"> <i class="fa-solid fa-road"></i> {{__('Rutas')}}</a>
                     </li> 
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ route('sale.index') }}"> <i class="fa-solid fa-sack-dollar"></i>{{__('Ventas')}}</a>
@@ -133,12 +171,11 @@
                         <a class="nav-link text-white" href="{{ route('purchase.index') }}"> <i class="fa-solid fa-money-bill-trend-up"></i>{{__('Compras')}}</a>
                     </li> 
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre><i class="bi bi-person-circle"></i>
-                            {{ Auth::user()->name }}
+                        <a id="userDropdown" class="nav-link dropdown-toggle text-white dropdown-btn" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item " href="{{ route('logout') }}" onclick="event.preventDefault();
-                                document.getElementById('logout-form').submit();">
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 {{ __('Cerrar Sesion') }}
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
@@ -187,12 +224,40 @@
         document.addEventListener('DOMContentLoaded', function() {
             const passwordField = document.querySelector('#password');
             const togglePassword = document.querySelector('.toggle-password');
-            togglePassword.addEventListener('click', function() {
-                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordField.setAttribute('type', type);
-            });
+            
+            if (passwordField && togglePassword) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+                });
+            }
         });
     </script>
+    <script>
+    document.querySelectorAll('.dropdown-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            let dropdownMenu = this.nextElementSibling;
+            if (dropdownMenu.classList.contains('dropdown-menu')) {
+                dropdownMenu.classList.toggle('show');
+            }
+        });
+    });
+
+    // Ocultar el menú desplegable cuando se hace clic fuera de él
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-btn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-menu");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    };
+</script>
+
 </body>
 
 </html>

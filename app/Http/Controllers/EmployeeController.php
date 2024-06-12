@@ -28,12 +28,52 @@ class EmployeeController extends Controller
     }
 
     public function store(Request $request)
-    {
-        
-
-
+{
     $request->validate([
-        // Aquí van tus reglas de validación para los campos del formulario
+        'users_id' => 'required|exists:users,id',
+        'name' => 'required|string|max:255',
+        'surname' => 'required|string|max:255',
+        'document_number' => [
+            'required',
+            'string',
+            'max:255',
+            function ($attribute, $value, $fail) {
+                // Normalizar el número de documento para comparar con la base de datos
+                $normalizedValue = preg_replace('/\s+/', '', $value);
+
+                // Verificar si ya existe un empleado con este número de documento
+                $existingEmployee = Employee::where('document_number', $normalizedValue)->exists();
+
+                // Si ya existe un empleado con este número de documento, fallar la validación
+                if ($existingEmployee) {
+                    $fail('El número de documento ya está registrado.');
+                }
+            },
+        ],
+        'gender' => 'required|string|max:10',
+        'civil_status' => 'required|string|max:255',
+        'eps' => 'required|string|max:255',
+        'phone' => [
+            'required',
+            'string',
+            'max:10',
+            'unique:employees,phone',
+            function ($attribute, $value, $fail) {
+                // Normalizar el número de teléfono para comparar con la base de datos
+                $normalizedValue = preg_replace('/\s+/', '', $value);
+
+                // Verificar si ya existe un empleado con este número de teléfono
+                $existingEmployee = Employee::where('phone', $normalizedValue)->exists();
+
+                // Si ya existe un empleado con este número de teléfono, fallar la validación
+                if ($existingEmployee) {
+                    $fail('El número de teléfono ya está registrado.');
+                }
+            },
+        ],
+        'children' => 'required|integer',
+        'home' => 'required|string|max:255',
+        'routes_id' => 'required|exists:routes,id',
     ]);
 
     // Obtener el correo electrónico del formulario
@@ -48,31 +88,15 @@ class EmployeeController extends Controller
         // Si el empleado ya existe, redirigir de vuelta al formulario con un mensaje de error
         return redirect()->back()->withErrors(['user_email' => 'El empleado ya está registrado.'])->withInput();
     }
-    $validatedData = $request->validate([
-        'users_id' => 'required|exists:users,id',
-        'name' => 'required|string|max:255',
-        'surname' => 'required|string|max:255',
-        'document_number' => 'required|string|max:255',
-        'gender' => 'required|string|max:10',
-        'civil_status' => 'required|string|max:255',
-        'eps' => 'required|string|max:255',
-        'phone' => 'required|string|max:15',
-        'children' => 'required|integer',
-        'home' => 'required|string|max:255',
-        'routes_id' => 'required|exists:routes,id',
-    ]);
 
-    $employee = new Employee($validatedData);
+    // Crear el empleado con los datos validados
+    $employee = new Employee($request->validated());
     $employee->save();
 
     return redirect()->route('employee.index')->with('success', 'Empleado Creado con Exito.');
-    }
-    public function show($id)
-    {
-        $employee = Employee::find($id);
+}
 
-        return view('employee.show', compact('employee'));
-    }
+
 
     public function edit($id)
     {
@@ -85,13 +109,59 @@ class EmployeeController extends Controller
 
     public function update(Request $request, Employee $employee)
     {
-        request()->validate(Employee::$rules);
+        $request->validate([
+            'users_id' => 'required|exists:users,id',
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'document_number' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) use ($employee) {
+                    // Normalizar el número de documento para comparar con la base de datos
+                    $normalizedValue = preg_replace('/\s+/', '', $value);
 
-        $employee->update($request->all());
+                    // Verificar si ya existe otro empleado con este número de documento
+                    $existingEmployee = Employee::where('id', '!=', $employee->id)
+                        ->where('document_number', $normalizedValue)
+                        ->exists();
 
-        return redirect()->route('employee.index')
-            ->with('success', 'Empleado actualizado con éxito.');
+                    // Si ya existe otro empleado con este número de documento, fallar la validación
+                    if ($existingEmployee) {
+                        $fail('El número de documento ya está registrado.');
+                    }
+                },
+            ],
+            'gender' => 'required|string|max:10',
+            'civil_status' => 'required|string|max:255',
+            'eps' => 'required|string|max:255',
+            'phone' => [
+                'required',
+                'string',
+                'max:10',
+                function ($attribute, $value, $fail) use ($employee) {
+                    // Verificar si ya existe otro empleado con este número de teléfono
+                    $existingEmployee = Employee::where('id', '!=', $employee->id)
+                        ->where('phone', $value)
+                        ->exists();
+
+                    // Si ya existe otro empleado con este número de teléfono, fallar la validación
+                    if ($existingEmployee) {
+                        $fail('El número de teléfono ya está registrado.');
+                    }
+                },
+            ],
+            'children' => 'required|integer',
+            'home' => 'required|string|max:255',
+            'routes_id' => 'required|exists:routes,id',
+        ]);
+
+        // Actualizar el empleado con los datos validados
+        $employee->update($request->validated());
+
+        return redirect()->route('employee.index')->with('success', 'Empleado actualizado con éxito.');
     }
+
 
     public function updateStatus(Request $request, $id)
     {

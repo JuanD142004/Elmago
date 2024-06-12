@@ -61,13 +61,9 @@ class PurchaseController extends Controller
             'detalles' => 'required|array',
             'detalles.*.Producto' => 'required|exists:products,id',
             'detalles.*.Lote' => 'required|string|max:255',
-            'detalles.*.Cantidad' => 'required|numeric|min:1',
+            'detalles.*.Cantidad' => 'required|integer|min:1',
             'detalles.*.ValorUnitario' => 'required|numeric|min:0',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
 
         try {
             $datos = $request->all();
@@ -90,6 +86,11 @@ class PurchaseController extends Controller
                 $detalleCompra->unit_value = $detalle['ValorUnitario'];
                 $detalleCompra->purchases_id = $compra->id; // Asociar el detalle con la compra creada
                 $detalleCompra->save();
+
+                // Incrementar el stock del producto
+                $product = Product::find($detalle['Producto']);
+                $product->stock += $detalle['Cantidad'];
+                $product->save();
             }
 
             // Retornar una respuesta de éxito

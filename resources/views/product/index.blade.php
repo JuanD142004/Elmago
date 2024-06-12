@@ -94,6 +94,11 @@
         .dataTables_wrapper .dt-buttons .btn i {
             margin-right: 5px;
         }
+         /* Estilo para la columna de stock */
+         #exitencia {
+            background-color: rgb(6, 28, 65);
+            color: white;
+        }
         </style>
 <div class="container-fluid">
    <div class="row">
@@ -122,10 +127,10 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nombre del Producto</th>
-                                    <th>Marca</th>
+                                    <th>Nombre y Marca del Producto</th>
+                                    <th>Descripcion del producto</th>
                                     <th>Precio unitario</th>
-                                    <th>Unidad de medida</th>
+                                    <th>Stock</th>
                                     <th>Proveedores</th>
                                     <th>Estado</th>
                                     <th></th>
@@ -135,17 +140,17 @@
                                 @foreach ($products as $product)
                                 <tr>
                                     <td>{{ ++$i }}</td>
-                                    <td>{{ $product->product_name }}</td>
-                                    <td>{{ $product->brand }}</td>
+                                    <td>{{ $product->product_name_and_brand}}</td>
+                                    <td>{{ $product->product_description }}</td>
                                     <td>{{ $product->price_unit }}</td>
-                                    <td>{{ $product->unit_of_measurement }}</td>
-                                    <td>{{ $product->supplier->supplier_name }}</td>
+                                    <td class="text-center" id="exitencia">{{ $product->stock }}</td>
+                                    <td>{{ $product->supplier ? $product->supplier->supplier_name : 'Proveedor no disponible' }}</td>
                                     <td>
                                         <form id="toggle-form-{{ $product->id }}" action="{{ route('product.update_status', $product->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
                                             <button type="button" class="btn btn-sm {{ $product->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $product->id }}, {{ $product->enabled ? 0 : 1 }})">
-                                                <i class="fa fa-fw {{ $product->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $product->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                                                <i class="fa fa-fw {{ $product->enabled ? 'fa-check' :'fa-times'  }}"></i> {{ $product->enabled ? 'Habilitado' : 'Inhabiliado' }}
                                             </button>
                                             <input type="hidden" name="status" value="{{ $product->enabled ? 0 : 1 }}">
                                         </form>

@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario Mejorado</title>
@@ -86,6 +87,7 @@
             font-size: 14px;
         }
     </style>
+
 </head>
 
 <body>
@@ -95,6 +97,12 @@
                 <div class="box box-info padding-1">
                     <div class="box-body">
                         <h2>Formulario de Venta</h2>
+                        @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                        <!-- Primer formulario -->
                         <form id="mainForm" action="{{ route('sales.store') }}" method="POST">
                             @csrf
 
@@ -269,7 +277,7 @@
             const newRow = templateRow.cloneNode(true);
             newRow.classList.remove('product-row-template');
             tableBody.appendChild(newRow);
-
+    
             newRow.querySelectorAll('input, select').forEach(input => {
                 if (input.tagName === 'SELECT') {
                     input.selectedIndex = 0;
@@ -277,7 +285,7 @@
                     input.value = '';
                 }
             });
-
+    
             newRow.querySelector('.products-id').addEventListener('change', function() {
                 updatePriceUnit(this);
                 toggleRemoveButton(this);
@@ -286,27 +294,20 @@
             newRow.querySelectorAll('.amount').forEach(input => {
                 input.addEventListener('input', function() {
                     let value = this.value.trim();
-
-                    // Si el valor ingresado no es un número, se limpia el campo
-                    if (isNaN(value)) {
+    
+                    if (value === '-') {
                         this.value = '';
                         return;
                     }
-
-                    // Si el valor es menor que 1, se establece como 1
-                    if (parseInt(value) < 1) {
-                        this.value = '1';
-                        return;
+    
+                    if (value.startsWith('-')) {
+                        value = value.substring(1);
+                        this.value = value;
                     }
-
-                    // Si el valor es mayor que 999, se establece como 999
-                    if (parseInt(value) > 999) {
-                        this.value = '999';
-                        return;
-                    }
+    
+                    updateTotal(newRow);
                 });
             });
-
             addRemoveButtonHandler(newRow);
 
             // Llamar a la función para poblar las opciones del nuevo select
@@ -402,7 +403,7 @@
                 toggleRemoveButton(this);
             });
         });
-
+    
         const initialRow = document.querySelector('.product-row-template');
         addRemoveButtonHandler(initialRow);
 
@@ -414,54 +415,19 @@
             updateRoute();
         });
     });
-
+    
     function enviarDetalles() {
-        // Reiniciar los mensajes de error
-        document.querySelectorAll('.error-message').forEach(function(element) {
-            element.textContent = '';
-        });
-
-        let hasError = false;
-
-        // Verificar campos vacíos en el formulario de venta
-        document.querySelectorAll('select[name^="products_id"], input[name^="amount"], input[name^="price_total"], select[name^="customers_id"], select[name^="payment_method"]').forEach(function(element, index) {
-            const value = element.value.trim();
-            if (!value && element.name !== 'discount[]') { // Excluir el campo de descuento
-                const errorMessage = element.closest('.form-group').querySelector('.error-message');
-                errorMessage.textContent = 'Este campo es obligatorio';
-                hasError = true;
-            }
-        });
-
-        if (hasError) {
-            return; // No continuar si hay errores en el formulario de venta
-        }
-
-        // Verificar campos vacíos en el formulario de detalles de venta
-        document.querySelectorAll('select[name^="products_id"], input[name^="price_unit"], input[name^="amount"], input[name^="discount"], input[name^="total_price"]').forEach(function(element) {
-            const value = element.value.trim();
-            if (!value && element.name !== 'discount[]') { // Excluir el campo de descuento
-                const errorMessage = element.closest('tr').querySelector('.error-message');
-                errorMessage.textContent = 'Este campo es obligatorio';
-                hasError = true;
-            }
-        });
-
-        if (hasError) {
-            return; // No continuar si hay errores en el formulario de detalles de venta
-        }
-
+        const detalles = [];
         const customerId = document.querySelector('select[name="customers_id"]').value;
         const priceTotal = document.querySelector('input[name="price_total"]').value.replace(/[^\d]/g, ''); // Remover formateo
         const paymentMethod = document.querySelector('select[name="payment_method"]').value;
-
-        const detalles = [];
+    
         document.querySelectorAll('select[name^="products_id"]').forEach((select, index) => {
             const productId = select.value;
             const priceUnit = document.querySelectorAll('input[name^="price_unit"]')[index].value.replace(/[^\d]/g, ''); // Remover formateo
             const amount = document.querySelectorAll('input[name^="amount"]')[index].value;
             const discount = document.querySelectorAll('input[name^="discount"]')[index].value.replace(/[^\d]/g, ''); // Remover formateo
-
+    
             detalles.push({
                 products_id: productId,
                 price_unit: priceUnit,
@@ -469,15 +435,14 @@
                 discount: discount
             });
         });
-
+    
         const data = {
             customers_id: customerId,
             price_total: priceTotal,
             payment_method: paymentMethod,
             detalles: detalles
         };
-
-        // Perform the AJAX request
+    
         $.ajax({
             type: "POST",
             url: "{{ route('sales.store') }}",
@@ -489,11 +454,13 @@
                 console.log(response);
                 window.location.href = "{{ route('sales.index') }}";
             },
-            error: function(err) {
-                console.error(err);
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "Ocurrió un error desconocido.";
+                alert(errorMessage);
             }
         });
     }
+    
 </script>
 
 </html>

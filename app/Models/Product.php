@@ -1,75 +1,64 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class Product
  *
- * @property $id
- * @property $product_name
- * @property $brand
- * @property $price_unit
- * @property $unit_of_measurement
- * @property $suppliers_id
- * @property $created_at
- * @property $updated_at
+ * @property int $id
+ * @property string $product_name_and_brand
+ * @property string $price_unit
+ * @property string $product_description
+ * @property int $stock
+ * @property int $suppliers_id
+ * @property bool $enabled
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  *
  * @property Supplier $supplier
- * @property DetailsPurchase[] $detailsPurchases
- * @property DetailsSale[] $detailsSales
- * @property Load[] $loads
- * @package App
- * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Product extends Model
 {
-    
-
-    protected $perPage = 20;
-
-    /**
-     * Attributes that should be mass-assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['product_name', 'brand', 'price_unit', 'unit_of_measurement', 'suppliers_id','enabled'];
-    protected $attributes = [
-        'enabled' => true,
+    protected $fillable = [
+        'product_name_and_brand', 
+        'price_unit', 
+        'product_description', 
+        'stock', 
+        'suppliers_id', 
+        'enabled'
     ];
 
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function supplier()
     {
         return $this->belongsTo(\App\Models\Supplier::class, 'suppliers_id', 'id');
+        return $this->belongsTo(Supplier::class);
     }
-    
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Boot method to listen to model events.
      */
-    public function detailsPurchases()
+    protected static function boot()
     {
-        return $this->hasMany(\App\Models\DetailsPurchase::class, 'id', 'products_id');
+        parent::boot();
+
+        static::saving(function ($product) {
+            $validator = Validator::make($product->toArray(), [
+                'stock' => 'integer|min:0',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+        });
     }
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function detailsSales()
+    public function scopeEnabledSupplier($query)
     {
-        return $this->hasMany('App\Models\DetailsSale','id', 'products_id');
-    }
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function loads()
-    {
-        return $this->hasMany(\App\Models\Load::class, 'id', 'products_id');
+        return $query->whereHas('supplier', function ($query) {
+            $query->where('enabled', true);
+        });
     }
     
 
