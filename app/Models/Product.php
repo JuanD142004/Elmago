@@ -1,8 +1,9 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class Product
@@ -21,10 +22,44 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
-    protected $fillable = ['product_name_and_brand', 'price_unit', 'product_description', 'stock', 'suppliers_id', 'enabled'];
+    protected $fillable = [
+        'product_name_and_brand', 
+        'price_unit', 
+        'product_description', 
+        'stock', 
+        'suppliers_id', 
+        'enabled'
+    ];
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'suppliers_id');
+        return $this->belongsTo(\App\Models\Supplier::class, 'suppliers_id', 'id');
+        return $this->belongsTo(Supplier::class);
     }
+
+    /**
+     * Boot method to listen to model events.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($product) {
+            $validator = Validator::make($product->toArray(), [
+                'stock' => 'integer|min:0',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+        });
+    }
+    public function scopeEnabledSupplier($query)
+    {
+        return $query->whereHas('supplier', function ($query) {
+            $query->where('enabled', true);
+        });
+    }
+    
+
 }

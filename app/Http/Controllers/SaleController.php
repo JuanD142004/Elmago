@@ -35,8 +35,7 @@ class SaleController extends Controller
         $sale = new Sale();
         $detailsSale = new DetailsSale();
         $products = Product::all();
-        $customers = Customer::all('id', 'customer_name');
-
+        $customers = Customer::with('route:id,route_name')->get(['id', 'customer_name', 'routes_id']);
         return view('sale.create', compact('sale', 'detailsSale', 'products', 'customers'));
     }
 
@@ -54,8 +53,15 @@ class SaleController extends Controller
     
             // Validar que el producto tenga stock suficiente
             foreach ($data['detalles'] as $detalle) {
-                if (!Product::where('id', $detalle['products_id'])->where('stock', '>', 0)->exists()) {
+                $producto = Product::find($detalle['products_id']);
+                if (!$producto || $producto->stock <= 0) {
                     return response()->json(['success' => false, 'error' => 'El producto seleccionado no tiene stock suficiente.'], 400);
+                }
+    
+                // Verificar si la cantidad solicitada supera al stock disponible
+                $cantidadSolicitada = isset($detalle['amount']) ? $detalle['amount'] : 1; // Cambiado de 'quantity' a 'amount'
+                if ($cantidadSolicitada > $producto->stock) {
+                    return response()->json(['success' => false, 'error' => 'La cantidad solicitada excede el stock disponible.'], 400);
                 }
             }
     
@@ -66,10 +72,9 @@ class SaleController extends Controller
             $venta->payment_method = $data['payment_method'];
             $venta->enabled = true; // Marcar la venta como habilitada
             $venta->save();
+    
             // Recorrer y guardar los detalles de la venta en la base de datos
             foreach ($data['detalles'] as $detalle) {
-                
-                
                 $detalleVenta = new DetailsSale();
                 $detalleVenta->products_id = $detalle['products_id'];
                 $detalleVenta->price_unit = preg_replace('/[^\d]/', '', $detalle['price_unit']); // Remover formateo
@@ -79,22 +84,18 @@ class SaleController extends Controller
                 $detalleVenta->save();
     
                 // Decrementar el stock del producto
-                $product = Product::find($detalle['products_id']); // Cambiado de 'product_id' a 'products_id'
-                $product->stock -= $detalle['amount']; // Cambiado de 'quantity' a 'amount'
-                $product->save();
+                $producto->stock -= $detalle['amount'];
+                $producto->save();
             }
     
             // Retornar una respuesta de éxito
-            return redirect()->route('sales.index')->with('success', 'Venta creada exitosamente.');
+            return response()->json(['success' => true, 'message' => 'Venta creada exitosamente.'], 200);
         } catch (\Exception $e) {
             // Manejar cualquier excepción que ocurra durante el proceso
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
     
-
-
-
     /**
      * Display the specified resource.
      *
