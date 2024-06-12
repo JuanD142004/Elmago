@@ -88,6 +88,11 @@
                 <div class="box box-info padding-1">
                     <div class="box-body">
                         <h2>Formulario de Venta</h2>
+                        @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                         <!-- Primer formulario -->
                         <form id="mainForm" action="{{ route('sales.store') }}" method="POST">
                             @csrf
@@ -152,7 +157,7 @@
                                 <tbody id="selectedProductsBody">
                                     <tr class="product-row-template">
                                         <td>
-                                            {{ Form::select('products_id[]', $products->pluck('product_name', 'id'), null, ['class' => 'form-control products-id', 'placeholder' => 'Selecciona un producto']) }}
+                                            {{ Form::select('products_id[]', $products->pluck('product_name_and_brand', 'id'), null, ['class' => 'form-control products-id', 'placeholder' => 'Selecciona un producto']) }}
                                             {!! $errors->first('products_id', '<div class="invalid-feedback">:message</div>') !!}
                                         </td>
                                         <td>

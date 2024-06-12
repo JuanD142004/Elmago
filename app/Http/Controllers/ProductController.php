@@ -43,11 +43,12 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        Product::create($request->validated());
+        $data = $request->validated();
+        $data['stock'] = 0; // Asegurar que el stock inicial es 0
+        Product::create($data);
         return redirect()->route('product.index')
             ->with('success', 'Producto creado con éxito.');
-    } 
-
+    }
     /**
      * Display the specified resource.
      */
