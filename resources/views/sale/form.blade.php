@@ -79,6 +79,7 @@
             pointer-events: none;
         }
     </style>
+
 </head>
 
 <body>
@@ -205,18 +206,18 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const products = @json($products);
-
+    
         function updatePriceUnit(selectElement) {
             const selectedProductId = selectElement.value;
             const selectedProduct = products.find(product => product.id == selectedProductId);
             const priceUnitInput = selectElement.closest('tr').querySelector('.price-unit');
             let priceUnitInPesos = 0;
-
+    
             if (selectedProduct) {
                 const priceString = selectedProduct.price_unit.replace(/\D/g, '');
                 priceUnitInPesos = parseFloat(priceString);
             }
-
+    
             if (isNaN(priceUnitInPesos)) {
                 priceUnitInput.value = '';
             } else {
@@ -225,45 +226,45 @@
             }
             updateTotal(selectElement.closest('tr'));
         }
-
+    
         function updateTotal(row) {
             const priceUnitInput = row.querySelector('.price-unit');
             const amountInput = row.querySelector('.amount');
             const discountInput = row.querySelector('.discount');
             const totalPriceInput = row.querySelector('.total-price');
-
+    
             const priceUnit = parseFloat(priceUnitInput.value.replace(/\D/g, ''));
             const amount = parseFloat(amountInput.value) || 0;
             const discount = parseDiscount(discountInput.value);
-
+    
             if (isNaN(priceUnit) || isNaN(amount) || isNaN(discount)) {
                 totalPriceInput.value = '';
             } else {
                 let totalInPesos = (priceUnit * amount) - discount;
                 totalInPesos = Math.round(totalInPesos);
-
+    
                 const formattedTotal = '$' + new Intl.NumberFormat('es-CO').format(totalInPesos);
                 totalPriceInput.value = formattedTotal;
             }
             updatePriceTotal();
         }
-
+    
         function parseDiscount(discountString) {
             const discountNumber = parseFloat(discountString.replace(/\D/g, ''));
-
+    
             if (isNaN(discountNumber)) {
                 return 0;
             } else {
                 return discountNumber;
             }
         }
-
+    
         function toggleRemoveButton(selectElement) {
             const row = selectElement.closest('tr');
             const removeButton = row.querySelector('.remove-product-btn');
             removeButton.classList.remove('d-none');
         }
-
+    
         function addRemoveButtonHandler(row) {
             if (!row.classList.contains('product-row-template')) {
                 row.querySelector('.remove-product-btn').addEventListener('click', function() {
@@ -272,7 +273,7 @@
                 });
             }
         }
-
+    
         function updatePriceTotal() {
             const totalPrices = document.querySelectorAll('.total-price');
             let totalPriceSum = 0;
@@ -282,51 +283,51 @@
                     totalPriceSum += totalPrice;
                 }
             });
-
+    
             totalPriceSum = Math.round(totalPriceSum);
-
+    
             const formattedTotalPrice = '$' + new Intl.NumberFormat('es-CO').format(totalPriceSum);
             const priceTotalInput = document.getElementById('price_total');
             priceTotalInput.value = formattedTotalPrice;
         }
-
+    
         document.querySelectorAll('.products-id').forEach(select => {
             select.addEventListener('change', function() {
                 updatePriceUnit(this);
                 toggleRemoveButton(this);
             });
         });
-
+    
         document.querySelectorAll('.amount, .discount').forEach(input => {
             input.addEventListener('input', function() {
                 let value = this.value.trim();
-
+    
                 if (value === '-') {
                     this.value = '';
                     return;
                 }
-
+    
                 if (value.startsWith('-')) {
                     value = value.substring(1);
                     this.value = value;
                 }
-
+    
                 if (this.classList.contains('discount') && value === '') {
                     this.value = '$';
                     return;
                 }
-
+    
                 updateTotal(this.closest('tr'));
             });
         });
-
+    
         document.getElementById('addProductBtn').addEventListener('click', function() {
             const tableBody = document.getElementById('selectedProductsBody');
             const templateRow = tableBody.querySelector('.product-row-template');
             const newRow = templateRow.cloneNode(true);
             newRow.classList.remove('product-row-template');
             tableBody.appendChild(newRow);
-
+    
             newRow.querySelectorAll('input, select').forEach(input => {
                 if (input.tagName === 'SELECT') {
                     input.selectedIndex = 0;
@@ -334,49 +335,49 @@
                     input.value = '';
                 }
             });
-
+    
             newRow.querySelector('.products-id').addEventListener('change', function() {
                 updatePriceUnit(this);
                 toggleRemoveButton(this);
             });
-
+    
             newRow.querySelectorAll('.amount, .discount').forEach(input => {
                 input.addEventListener('input', function() {
                     let value = this.value.trim();
-
+    
                     if (value === '-') {
                         this.value = '';
                         return;
                     }
-
+    
                     if (value.startsWith('-')) {
                         value = value.substring(1);
                         this.value = value;
                     }
-
+    
                     updateTotal(newRow);
                 });
             });
-
+    
             addRemoveButtonHandler(newRow);
         });
-
+    
         const initialRow = document.querySelector('.product-row-template');
         addRemoveButtonHandler(initialRow);
     });
-
+    
     function enviarDetalles() {
         const detalles = [];
         const customerId = document.querySelector('select[name="customers_id"]').value;
         const priceTotal = document.querySelector('input[name="price_total"]').value.replace(/[^\d]/g, ''); // Remover formateo
         const paymentMethod = document.querySelector('select[name="payment_method"]').value;
-
+    
         document.querySelectorAll('select[name^="products_id"]').forEach((select, index) => {
             const productId = select.value;
             const priceUnit = document.querySelectorAll('input[name^="price_unit"]')[index].value.replace(/[^\d]/g, ''); // Remover formateo
             const amount = document.querySelectorAll('input[name^="amount"]')[index].value;
             const discount = document.querySelectorAll('input[name^="discount"]')[index].value.replace(/[^\d]/g, ''); // Remover formateo
-
+    
             detalles.push({
                 products_id: productId,
                 price_unit: priceUnit,
@@ -384,35 +385,14 @@
                 discount: discount
             });
         });
-
+    
         const data = {
             customers_id: customerId,
             price_total: priceTotal,
             payment_method: paymentMethod,
             detalles: detalles
         };
-                // Utiliza ajaxPrefilter para interceptar todas las solicitudes AJAX
-        $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-            // Modifica el manejador de errores de la solicitud
-            options.error = function(jqXHR, textStatus, errorThrown) {
-                // Intenta obtener el mensaje de error del servidor
-                var errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.error? jqXHR.responseJSON.error : "Ocurrió un error desconocido.";
-
-                // Muestra una alerta con el mensaje de error específico
-                if (errorMessage === 'El producto seleccionado no tiene stock suficiente.') {
-                    alert(errorMessage); // Muestra una alerta con el mensaje de error
-                } else {
-                    // Para otros errores, simplemente registra el error en la consola
-                    console.error(textStatus, errorThrown);
-                }
-            };
-
-            // Continúa con la solicitud original
-            return true;
-        });
-
-
-            // Perform the AJAX request
+    
         $.ajax({
             type: "POST",
             url: "{{ route('sales.store') }}",
@@ -425,19 +405,12 @@
                 window.location.href = "{{ route('sales.index') }}";
             },
             error: function(xhr, status, error) {
-                // Intenta obtener el mensaje de error del servidor
-                var errorMessage = xhr.responseJSON && xhr.responseJSON.error? xhr.responseJSON.error : "Ocurrió un error desconocido.";
-
-                // Muestra una alerta con el mensaje de error específico
-                if (errorMessage === 'El producto seleccionado no tiene stock suficiente.') {
-                    alert(errorMessage);
-                } else {
-                    // Para otros errores, simplemente registra el error en la consola
-                    console.error(error);
-                }
+                var errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "Ocurrió un error desconocido.";
+                alert(errorMessage);
             }
         });
     }
+    
 </script>
 
 </body>

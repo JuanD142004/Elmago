@@ -158,9 +158,9 @@
                                             @csrf
                                             @method('PATCH')
                                             @if ($route->enabled)
-                                                <button type="button" class="btn btn-sm btn-warning" onclick="toggleSaleStatus({{ $route->id }}, false)"><i class="fa fa-fw fa-times"></i> Inhabilitar</button>
+                                                <button type="button" class="btn btn-sm btn-warning" onclick="toggleSaleStatus({{ $route->id }}, false)"><i class="fa fa-fw fa-check "></i> Habilitado</button>
                                             @else
-                                                <button type="button" class="btn btn-sm btn-success" onclick="toggleSaleStatus({{ $route->id }}, true)"><i class="fa fa-fw fa-check"></i> Habilitar</button>
+                                                <button type="button" class="btn btn-sm btn-success" onclick="toggleSaleStatus({{ $route->id }}, true)"><i class="fa fa-fw fa-times"></i> Inhabilitado</button>
                                             @endif
                                             <input type="hidden" name="status" value="{{ $route->enabled ? '0' : '1' }}">
                                         </form>
