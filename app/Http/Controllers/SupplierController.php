@@ -13,13 +13,7 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener todos los proveedores sin importar su estado
-        $suppliers = Supplier::withoutGlobalScope(\App\Scopes\EnabledScope::class)
-            ->orderBy('enabled', 'desc')
-            ->orderBy('supplier_name')
-            ->paginate();
-
-            
+        $suppliers = Supplier::paginate();
         return view('supplier.index', compact('suppliers'))
             ->with('i', (request()->input('page', 1) - 1) * $suppliers->perPage());
     }
@@ -146,7 +140,7 @@ class SupplierController extends Controller
             'status' => 'required|boolean',
         ]);
 
-        $supplier = Supplier::withoutGlobalScope(\App\Scopes\EnabledScope::class)->findOrFail($id);
+        $supplier = Supplier::findOrFail($id);
         $supplier->enabled = $request->input('status');
         $supplier->save();
 

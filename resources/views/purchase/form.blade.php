@@ -129,7 +129,7 @@
                                         <tbody id="selectedProductsBody">
                                             <tr class="product-row-template">
                                                 <td>
-                                                    {{ Form::select('products_id[]', $products->pluck('product_name_and_brand', 'id'), null, ['class' => 'form-control products-id', 'placeholder' => 'Selecciona un producto']) }}
+                                                    {{ Form::select('products_id[]', $products->pluck('product_name', 'id'), null, ['class' => 'form-control products-id', 'placeholder' => 'Selecciona un producto']) }}
                                                     {!! $errors->first('products_id', '<div class="invalid-feedback">:message</div>') !!}
                                                 </td>
                                                 <td>

@@ -74,7 +74,7 @@
         </script>
         <div class="form-group">
             <label for="stock">{{ __('Stock') }}</label>
-            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product?->stock ?? 0) }}" id="stock" placeholder="Ingrese la cantidad de existencias" readonly>
+            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product?->stock) }}" id="stock" placeholder="Ingrese la cantidad de existencias">
             {!! $errors->first('stock', '<div class="invalid-feedback">Este campo es Obligatorio</div>') !!}
         </div>
         <div class="form-group">

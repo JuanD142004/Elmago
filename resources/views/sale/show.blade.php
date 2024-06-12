@@ -137,7 +137,7 @@
                                     <tbody>
                                         @foreach($sale->detailsSales as $index => $detailsSale)
                                         <tr class="{{ $index % 2 === 0 ? 'even' : 'odd' }}">
-                                            <td>{{ $detailsSale->product->product_name_and_brand ?? 'N/A' }}</td>
+                                            <td>{{ $detailsSale->product->product_name ?? 'N/A' }}</td>
                                             <td>${{ number_format($detailsSale->price_unit, 2, '.', ',') }}</td>
                                             <td>{{ $detailsSale->amount }}</td>
                                             <td>{{ number_format($detailsSale->discount, 2, '.', ',') }}</td>

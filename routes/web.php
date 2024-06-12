@@ -17,6 +17,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TruckTypeController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -153,3 +154,12 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::resource('customer', App\Http\Controllers\CustomerController::class);
 Route::patch('/customer/{id}/update_status', [App\Http\Controllers\CustomerController::class, 'updateStatus'])->name('customer.update_status');
 Route::resource('user', App\Http\Controllers\UserController::class);
+
+  // Rutas adicionales protegidas
+  Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+  Route::get('/browser-error', 'Auth\LoginController@showBrowserError')->name('browser.error');
+
+
+
+Auth::routes();
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
