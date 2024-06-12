@@ -13,7 +13,8 @@ class TruckTypeController extends Controller
         $busqueda = $request->busqueda;
         $truckTypes = TruckType::where('truck_brand', 'LIKE', '%' . $busqueda . '%')
                                 ->orWhere('plate', 'LIKE', '%' . $busqueda . '%')
-                                ->orderBy('id', 'asc')
+                                ->orderBy('enabled', 'desc')  // Añadir orden por estado habilitado primero
+                                ->orderBy('id', 'asc')        // Mantener orden adicional por id
                                 ->paginate();
     
         return view('truck-type.index', compact('truckTypes', 'busqueda'))
