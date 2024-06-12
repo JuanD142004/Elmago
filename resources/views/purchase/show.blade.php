@@ -9,72 +9,51 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-    <style>
-        body{
-            background-image: url('/img/El_mago.jpg');
-            background-size: cover; /* Ajusta la imagen para que cubra todo el fondo */
-            background-position: center; /* Centra la imagen */
-            background-repeat: no-repeat; /* Evita que la imagen se repita */
-            background-attachment: fixed;
-            height: 100vh; /* Ajusta la altura al 100% de la ventana */
-            width: 100vw; /* Ajusta el ancho al 100% de la ventana */
-            overflow-x: hidden; /* Evita el desbordamiento horizontal */
-        }
+<style>
+    body {
+        background-image: url('/img/El_mago.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        height: 100vh;
+        width: 100vw;
+        overflow-x: hidden;
+    }
 
+    .card {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: none;
+    }
 
-        .card {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-            border: none; /* Sin bordes para la tarjeta */
-        }
+    .table {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
 
-        .table {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-        }
-        .card {
-            width: 100%;
-            margin: auto;
-        }
+    .card {
+        width: 100%;
+        margin: auto;
+    }
 
-        .alert {
-            color: #856404;
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-        }
+    .alert {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
 
-        .details-table-container {
-            margin-top: 20px;
-        }
+    .details-table-container {
+        margin-top: 20px;
+    }
 
-        .table-details th,
-        .table-details td {
-            padding: 15px;
-        }
+    .table-details th,
+    .table-details td {
+        padding: 15px;
+    }
 
-
-
-        .card {
-            width: 100%;
-            margin: auto;
-        }
-
-        .card-header h4 {
-            font-size: 1.5rem;
-        }
-
-        .alert {
-            color: #856404;
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-        }
-        .details-table-container {
-            margin-top: 20px;
-        }
-
-        .table-details th,
-        .table-details td {
-            padding: 15px;
-        }
-    </style>
+    .card-header h4 {
+        font-size: 1.5rem;
+    }
+</style>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -104,7 +83,7 @@
                                         </tr>
                                         <tr>
                                             <th>{{ __("Valor Total") }}</th>
-                                            <td>{{ $purchase->total_value }}</td>
+                                            <td>${{ rtrim(rtrim(number_format($purchase->total_value, 2, ',', '.'), '0'), ',') }} </td>
                                         </tr>
                                         <tr>
                                             <th>{{ __("Número de Factura") }}</th>
@@ -134,7 +113,7 @@
                                             <td>{{ $detailsPurchase->product->product_name ?? 'N/A' }}</td>
                                             <td>{{ $detailsPurchase->purchase_lot }}</td>
                                             <td>{{ $detailsPurchase->amount }}</td>
-                                            <td>{{ $detailsPurchase->unit_value }}</td>
+                                            <td>${{ rtrim(rtrim(number_format($detailsPurchase->unit_value, 2, ',', '.'), '0'), ',') }} </td>
                                             <td>{{ $detailsPurchase->purchases_id }}</td>
                                         </tr>
                                         @endforeach

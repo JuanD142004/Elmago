@@ -7,26 +7,26 @@
     <title>Formulario de Compras</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body{
+        body {
             background-image: url('/img/El_mago.jpg');
-            background-size: cover; /* Ajusta la imagen para que cubra todo el fondo */
-            background-position: center; /* Centra la imagen */
-            background-repeat: no-repeat; /* Evita que la imagen se repita */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
-            overflow-x: hidden; /* Evita el desbordamiento horizontal */
+            overflow-x: hidden;
         }
 
-
         .card {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-            border: none; /* Sin bordes para la tarjeta */
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
         }
 
         .table {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
+            background-color: rgba(255, 255, 255, 0.8);
         }
-        
+
         .form-container {
             margin: auto;
             margin-top: 20px;
@@ -64,15 +64,14 @@
         .remove-product-btn i {
             pointer-events: none;
         }
-        
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-md-6" >
-                <div class="box box-info padding-1" >
+            <div class="col-md-6">
+                <div class="box box-info padding-1">
                     <div class="box-body">
                         <h2>Formulario de Compras</h2>
                         <form id="mainForm">
@@ -84,7 +83,7 @@
                             </div>
                             <div class="form-group">
                                 {{ Form::label('date', 'Fecha') }}
-                                {{ Form::date('date', \Carbon\Carbon::now(), ['class' => 'form-control' . ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Fecha','required']) }}
+                                {{ Form::date('date', \Carbon\Carbon::now(), ['class' => 'form-control' . ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Fecha', 'required', 'id' => 'dateField']) }}
                                 {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
                             </div>
                             <div class="form-group">
@@ -99,14 +98,13 @@
                             </div>
                             <div class="box-footer" style="margin: 20px;">
                                 <button type="button" class="btn btn-success" onclick="enviarDetalles()">Enviar</button>
-                                <a class="btn btn-primary" href="{{ route('purchase.index') }}"><i class="fas fa-chevron-left"></i>Volver</a>
+                                <a class="btn btn-primary" href="{{ route('purchase.index') }}"><i class="fas fa-chevron-left"></i> Volver</a>
                             </div>
-                        </form> <!-- Mueve esta etiqueta de cierre aquí -->
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    
 
             <div class="row">
                 <div class="col-12 form-container">
@@ -160,10 +158,15 @@
                 </div>
             </div>
     </div>
-</body>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
     <script>
         const purchaseStoreRoute = "{{ route('purchases.store') }}";
@@ -171,6 +174,20 @@
         const csrfToken = "{{ csrf_token() }}";
 
         document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateField = document.getElementById('dateField');
+            dateField.setAttribute('min', today);
+            dateField.setAttribute('max', today);
+            dateField.value = today;
+
+            dateField.addEventListener('change', function() {
+                if (this.value !== today) {
+                    icon
+                    alert('Solo puedes registrar una compra en la fecha actual.');
+                    this.value = today;
+                }
+            });
+
             var agregarDetalleButton = document.getElementById('agregarDetalle');
             if (agregarDetalleButton) {
                 agregarDetalleButton.addEventListener('click', function() {
@@ -196,10 +213,12 @@
         });
 
         function addEventListeners(row) {
-            row.querySelectorAll('input.amount, input.unit-value').forEach(function(input) {
+            row.querySelectorAll('input.amount').forEach(function(input) {
                 input.addEventListener('input', function() {
-                    if (isNaN(input.value.replace(/[^\d]/g, '')) || input.value < 0) {
+                    // Validar si el valor es un número positivo
+                    if (!(/^\d*\.?\d*$/.test(input.value)) || parseFloat(input.value) < 0) {
                         input.classList.add('is-invalid');
+                        input.value = ''; // Limpiar el campo si la entrada es inválida
                     } else {
                         input.classList.remove('is-invalid');
                     }
@@ -208,14 +227,41 @@
             });
 
             row.querySelectorAll('input.unit-value').forEach(function(input) {
-                input.addEventListener('input', function(event) {
-                    let value = event.target.value.replace(/[^\d]/g, ''); // Solo números
-                    value = formatCurrency(value);
-                    event.target.value = value;
+                input.addEventListener('blur', function(event) {
+                    // Validar si el valor es un número positivo
+                    if (!(/^\d*\.?\d*$/.test(event.target.value)) || parseFloat(event.target.value) < 0) {
+                        event.target.classList.add('is-invalid');
+                        event.target.value = ''; // Limpiar el campo si la entrada es inválida
+                    } else {
+                        event.target.classList.remove('is-invalid');
+                        // Formatear el valor monetario después de que el usuario haya terminado de ingresar
+                        let value = event.target.value.replace(/[^\d]/g, ''); // Solo números
+                        value = formatCurrency(value);
+                        event.target.value = value;
+                        calcularTotalCompra(); // Calcular el total después de formatear el valor unitario
+                    }
                 });
             });
         }
 
+
+        function calcularTotalCompra() {
+            var rows = document.querySelectorAll('#selectedProductsBody tr');
+            var total = 0;
+
+            rows.forEach(function(row) {
+                var cantidad = parseFloat(row.querySelector('.amount').value) || 0;
+                var valorUnitario = parseFloat(row.querySelector('.unit-value').value.replace(/[^\d]/g, '')) || 0;
+                var subtotal = cantidad * valorUnitario;
+                total += subtotal;
+            });
+
+            // Formatear el total como moneda en pesos colombianos sin decimales
+            var formattedTotal = formatCurrency(total);
+            document.querySelector('input[name="total_value"]').value = formattedTotal;
+        }
+
+        // Función para formatear el valor como moneda en pesos colombianos sin decimales
         function formatCurrency(value) {
             if (!value) return '';
             let number = parseInt(value.replace(/[^\d]/g, ''));
@@ -229,6 +275,7 @@
                 return '';
             }
         }
+
 
         function eliminarDetalle(button) {
             var row = button.parentNode.parentNode;
@@ -298,15 +345,16 @@
                     ...data
                 },
                 success: function(response) {
-                    alert('Compra registrada con éxito');
+                    swal('Compra registrada con éxito');
                     window.location.href = purchaseIndexRoute;
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.error('Error:', textStatus, errorThrown);
-                    alert('Ocurrió un error al registrar la compra. Por favor, inténtalo de nuevo.');
+                    swal('Ocurrió un error al registrar la compra, todos los campos deben ser rellenados.');
                 }
             });
         }
+        
     </script>
 </body>
 
