@@ -130,46 +130,47 @@
                                         <th>No</th>
                                         <th>Fecha</th>
                                         <th>Nombre de Ruta</th>
-                                        <th>Tipo de Camion</th>
+                                        <th>Tipo de Camión</th>
                                         <th>Mostrar</th>
                                         <th>Estado de la carga</th>
                                         <th>Editar</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @foreach ($loads as $load)
-                                        <tr>
-                                            <td>{{ $load->id }}</td>
-                                            <td>{{ $load->date }}</td>
-                                            <td>{{ $load->route->route_name }}</td>
-                                            <td>{{ $load->truckType->truck_brand }}</td>
-                                            <td>
-                                                <a class="btn btn-sm btn-primary" href="{{ route('load.show', $load->id) }}" style="background-color: #004085; border-color: #003768;" ><i class="fa fa-fw fa-eye"></i> {{ __('Mostar') }}</a>
-                                            </td>
-                                            <td>
-                                                <form id="toggle-form-{{ $load->id }}" action="{{ route('load.update_status', $load) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="button" class="btn btn-sm {{ $load->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $load->id }}, {{ $load->enabled ? 'false' : 'true' }})">
-                                                        <i class="fa fa-fw {{ $load->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $load->enabled ? 'Inhabilitar' : 'Habilitar' }}
-                                                    </button>
-                                                    <input type="hidden" name="status" value="{{ $load->enabled ? 0 : 1 }}">
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <form action="{{ route('load.destroy', $load->id) }}" method="POST">
-                                                    @if($load->enabled)
-                                                        <a class="btn btn-sm btn-success" href="{{ route('load.edit', $load->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
-                                                    @else
-                                                        <button type="button" class="btn btn-sm btn-success disabled" disabled><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</button>
-                                                    @endif
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
+                               <tbody>
+    @foreach ($loads as $load)
+        <tr>
+            <td>{{ $load->id }}</td>
+            <td>{{ $load->date }}</td>
+            <td>{{ $load->route->route_name }}</td>
+            <td>{{ $load->truckType->truck_brand }}</td>
+            <td>
+                <a class="btn btn-sm btn-primary" href="{{ route('load.show', $load->id) }}" style="background-color: #004085; border-color: #003768;" ><i class="fa fa-fw fa-eye"></i> {{ __('Mostrar') }}</a>
+            </td>
+            <td>
+                <form id="toggle-form-{{ $load->id }}" action="{{ route('load.update_status', $load) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <button type="button" class="btn btn-sm {{ $load->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $load->id }}, {{ $load->enabled ? 'false' : 'true' }})">
+                        <i class="fa fa-fw {{ $load->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $load->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                    </button>
+                    <input type="hidden" name="status" value="{{ $load->enabled ? 0 : 1 }}">
+                </form>
+            </td>
+            <td>
+                <form action="{{ route('load.destroy', $load->id) }}" method="POST">
+                    @if($load->enabled)
+                        <a class="btn btn-sm btn-success" href="{{ route('load.edit', $load->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
+                    @else
+                        <button type="button" class="btn btn-sm btn-success disabled" disabled><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</button>
+                    @endif
+                    @csrf
+                    @method('DELETE')
+                </form>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
+
                             </table>
                         </div>
                     </div>
@@ -261,7 +262,8 @@
                         }
                     }
                     
-                ]
+                ],
+                order: [[5, 'desc']] // Ordenar por el estado de carga (índice 5) en orden descendente (los habilitados primero)
             });
         });
         

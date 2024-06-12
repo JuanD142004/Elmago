@@ -4,7 +4,6 @@
     Customer
 @endsection
 
-
 @section('content')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -14,66 +13,65 @@
 <!-- DataTable de reportes -->
 <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
 <body>    
 
     <style>
-        body{
-        background-image: url('/img/El_mago.jpg');
-        background-size: cover; /* Ajusta la imagen para que cubra todo el fondo */
-        background-position: center; /* Centra la imagen */
-        background-repeat: no-repeat; /* Evita que la imagen se repita */
-        background-attachment: fixed;
-        height: 100vh; /* Ajusta la altura al 100% de la ventana */
-        width: 100vw; /* Ajusta el ancho al 100% de la ventana */
-        overflow-x: hidden; /* Evita el desbordamiento horizontal */
-    }
+        body {
+            background-image: url('/img/El_mago.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+        }
 
-
-    .card {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
-            border: none; /* Sin bordes para la tarjeta */
+        .card {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
         }
 
         .table {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
+            background-color: rgba(255, 255, 255, 0.8);
         }
-    </style>
-    <style>
+
         /* Estilos personalizados para los botones de exportación */
         .dt-buttons .btn {
-            font-size: 14px; /* Aumenta el tamaño de la fuente */
-            padding: 6px 25px; /* Aumenta el rellenado (padding) */
+            font-size: 14px;
+            padding: 6px 25px;
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
-        
+
         .dt-buttons .btn-success {
             background-color: #28a745;
             color: #fff;
             border: none;
         }
-        
+
         .dt-buttons .btn-danger {
             background-color: #dc3545;
             color: #fff;
             border: none;
         }
-        
+
         .dt-buttons .btn-info {
             background-color: #17a2b8;
             color: #fff;
             border: none;
         }
-        
+
         .dt-buttons .btn:hover {
             opacity: 0.8;
         }
-        
+
         .dt-buttons .btn:focus {
             outline: none;
             box-shadow: none;
         }
-        
+
         /* Estilos adicionales para ajustar el espaciado y la alineación */
         .dataTables_wrapper .dt-buttons {
             display: flex;
@@ -81,22 +79,24 @@
             align-items: center;
             margin-bottom: 20px;
         }
+
         .dataTables_wrapper .dt-buttons .btn {
             background-color: #1e3a5e !important;
             border-color: #1e3a5e !important;
             color: white !important;
         }
-        
+
         .dataTables_wrapper .dt-buttons .btn:hover {
             background-color: #143755 !important;
             border-color: #143755 !important;
         }
-        
+
         .dataTables_wrapper .dt-buttons .btn i {
             margin-right: 5px;
         }
-        </style>
-<br>
+    </style>
+
+    <br>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
@@ -107,8 +107,8 @@
                                 {{ __('Clientes') }}
                             </span>
                             <div class="float-right">
-                                <a href="{{ route('customer.create') }}" class="btn btn-dark text-white btn-sm float-right"  data-placement="left">
-                                  <i class="fas fa-plus"></i>  {{ __('Crear Cliente') }}
+                                <a href="{{ route('customer.create') }}" class="btn btn-dark text-white btn-sm float-right" data-placement="left">
+                                    <i class="fas fa-plus"></i> {{ __('Crear Cliente') }}
                                 </a>
                             </div>
                         </div>
@@ -121,7 +121,6 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover" id="myTable" style="width:100%">
-
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
@@ -130,7 +129,7 @@
                                         <th>Dirección</th>
                                         <th>Celular</th>
                                         <th>Correo</th>
-                                        <th>Id Ruta</th> <!-- Cambiado de Routes Id a Route Name -->
+                                        <th>Id Ruta</th>
                                         <th>Estado del cliente</th>
                                         <th>Editar</th>
                                     </tr>
@@ -138,34 +137,30 @@
                                 <tbody>
                                     @foreach ($customers as $customer)
                                         <tr>
-                                            <td>{{ $customer->id}}</td>
+                                            <td>{{ $customer->id }}</td>
                                             <td>{{ $customer->customer_name }}</td>
                                             <td>{{ $customer->company_name }}</td>
                                             <td>{{ $customer->location }}</td>
                                             <td>{{ $customer->cell_phone }}</td>
                                             <td>{{ $customer->mail }}</td>
-                                            <td>{{ $customer->route->route_name }}</td> <!-- Accede al nombre de la ruta a través de la relación -->
-                                            <td> 
-                                              <form id="toggle-form-{{ $customer->id }}" action="{{ route('customer.update_status', $customer) }}" method="POST">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <button type="button" class="btn btn-sm {{ $customer->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $customer->id }}, {{ $customer->enabled ? 0 : 1 }})">
-                                                            <i class="fa fa-fw {{ $customer->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $customer->enabled ? 'Inhabilitar' : 'Habilitar' }}
-                                                        </button>
-                                                        <input type="hidden" name="status" value="{{ $customer->enabled ? 0 : 1 }}">
-                                                    </form>
-                                                </td>
-
+                                            <td>{{ $customer->route->route_name }}</td>
+                                            <td>
+                                                <form id="toggle-form-{{ $customer->id }}" action="{{ route('customer.update_status', $customer) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="button" class="btn btn-sm {{ $customer->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $customer->id }}, {{ $customer->enabled ? 0 : 1 }})">
+                                                        <i class="fa fa-fw {{ $customer->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $customer->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                                                    </button>
+                                                    <input type="hidden" name="status" value="{{ $customer->enabled ? 0 : 1 }}">
+                                                </form>
                                             </td>
                                             <td>
-                                                <form action="{{ route('customer.destroy',$customer->id) }}" method="POST">
+                                                <form action="{{ route('customer.destroy', $customer->id) }}" method="POST">
                                                     @if($customer->enabled)
-                                                        
-                                                        <a class="btn btn-sm btn-success" href="{{ route('customer.edit',$customer->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
+                                                        <a class="btn btn-sm btn-success" href="{{ route('customer.edit', $customer->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                     @else
                                                         <button type="button" class="btn btn-sm btn-success disabled" disabled><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</button>
-                                                     @endif
-                                                     
+                                                    @endif
                                                     @csrf
                                                 </form>
                                             </td>
@@ -189,8 +184,7 @@
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
-    <script src="{{ asset('js/app.js') }}" defer></script>  
-    <!-- script de reportes -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" defer></script>
@@ -200,12 +194,11 @@
     <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js" defer></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
 
-
-
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable({
                 responsive: true,
+                order: [[7, 'desc']], // Ordenar por la columna "Estado del cliente" (habilitado primero)
                 language: {
                     "sProcessing": "Procesando...",
                     "sLengthMenu": "Mostrar _MENU_ registros",
@@ -256,36 +249,34 @@
                         extend: 'print',
                         text: '<i class="fas fa-print"></i>',
                         titleAttr: 'Imprimir',
-                        title:'Distribuciones El Mago Clientes',
+                        title: 'Distribuciones El Mago Clientes',
                         className: 'btn btn-info',
                         exportOptions: {
                             columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
                         }
                     }
-                    
                 ]
             });
         });
-        
 
-    function toggleSaleStatus(customerId, status) {
-        var form = document.getElementById('toggle-form-' + customerId);
-        var action = status ? 'habilitar' : 'inhabilitar';
+        function toggleSaleStatus(customerId, status) {
+            var form = document.getElementById('toggle-form-' + customerId);
+            var action = status ? 'habilitar' : 'inhabilitar';
 
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: `Esta acción cambiará el estado del cliente a ${status ? 'habilitado' : 'inhabilitado'}.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: `Sí, ${action}`,
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `Esta acción cambiará el estado del cliente a ${status ? 'habilitado' : 'inhabilitado'}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: `Sí, ${action}`,
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
     </script>
 @endsection

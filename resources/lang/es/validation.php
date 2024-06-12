@@ -105,11 +105,54 @@ return [
     'uploaded' => 'El campo :attribute no se pudo subir.',
     'url' => 'El formato del campo :attribute no es válido.',
     'uuid' => 'El campo :attribute debe ser un UUID válido.',
+    
     'custom' => [
         'attribute-name' => [
-            'rule-name' => 'custom-message',
+            'rule-name' => 'mensaje-personalizado',
+        ],
+
+        'customer_name' => [
+            'required' => 'El campo :attribute es obligatorio.',
+        ],
+        'customer_name' => [
+            'unique' => 'El :attribute ya está registrado en nuestra base de datos.',
+        ],
+
+        'company_name' => [
+            'required' => 'El campo :attribute es obligatorio.',
+        ],
+        'company_name' => [
+            'unique' => 'El :attribute ya está registrado en nuestra base de datos.',
+        ],
+
+        'location' => [
+            'required' => 'El campo :attribute es obligatorio.',
+        ],
+        'location' => [
+            'unique' => 'El :attribute ya está registrado en nuestra base de datos.',
+        ],
+
+        'cell_phone' => [
+            'required' => 'El campo :attribute es obligatorio.',
+        ],
+        'cell_phone' => [
+            'unique' => 'El :attribute ya está registrado en nuestra base de datos.',
+        ],
+
+        'mail' => [
+            'required' => 'El campo :attribute es obligatorio.',
+        ],
+        'mail' => [
+            'unique' => 'El :attribute ya está registrado en nuestra base de datos.',
+        ],
+        'routes_id' => [
+            'required' => 'El campo :attribute es obligatorio.',
         ],
     ],
+    
+    // Mensaje personalizado
+    'mensaje-personalizado' => 'El :attribute ya ha sido registrado',
+    
     'attributes' => [
         'users_id' => 'usuario',
         'document_number' => 'número de documento',
@@ -120,5 +163,12 @@ return [
         'children' => 'hijos',
         'home' => 'lugar de residencia',
         'routes_id' => 'ruta',
+        'customer_name' =>'nombre del cliente',
+        'company_name' => 'nombre de la empresa',
+        'location' => 'dirreción',
+        'cell_phone'=> 'celular',
+        'mail' => 'correo',
+        'routes_id' => 'Id ruta',
+
     ],
 ];

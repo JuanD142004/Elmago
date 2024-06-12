@@ -153,3 +153,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::resource('customer', App\Http\Controllers\CustomerController::class);
 Route::patch('/customer/{id}/update_status', [App\Http\Controllers\CustomerController::class, 'updateStatus'])->name('customer.update_status');
 Route::resource('user', App\Http\Controllers\UserController::class);
+// Ruta para mostrar la vista de clientes
+Route::get('/clientes', 'ClienteController@index')->name('cliente.index');
+// Ruta para manejar el filtrado de clientes
+Route::post('/clientes/filtrar', 'ClienteController@filtrar')->name('cliente.filtrar');

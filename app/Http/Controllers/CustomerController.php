@@ -11,31 +11,37 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request) // Asegúrate de recibir $request como parámetro
-    {
-        // Obtener el valor de la búsqueda del request
-        $busqueda = $request->input('busqueda');
+    public function index(Request $request)
+{
+    // Obtener el valor de la búsqueda del request
+    $busqueda = $request->input('busqueda');
 
-        // Realizar la búsqueda de los clientes
-        $customers = Customer::with('route')
-            ->where(function($query) use ($busqueda) {
-                $query->where('customer_name', 'LIKE', '%' . $busqueda . '%')
-                      ->orWhere('company_name', 'LIKE', '%' . $busqueda . '%')
-                      ->orWhere('cell_phone', 'LIKE', '%' . $busqueda . '%')
-                      ->orWhere('mail', 'LIKE', '%' . $busqueda . '%');
-            })
-            ->orWhereHas('route', function($query) use ($busqueda) {
-                $query->where('route_name', 'LIKE', '%' . $busqueda . '%');
-            })
-            ->orderBy('created_at', 'asc') // Luego los más recientes
-            ->orderBy('enabled', 'desc') // Los no anulados primero
-            
-            ->paginate(10);
+    // Realizar la búsqueda de los clientes
+    $customers = Customer::with('route')
+        ->where(function($query) use ($busqueda) {
+            $query->where('customer_name', 'LIKE', '%' . $busqueda . '%')
+                  ->orWhere('company_name', 'LIKE', '%' . $busqueda . '%')
+                  ->orWhere('cell_phone', 'LIKE', '%' . $busqueda . '%')
+                  ->orWhere('mail', 'LIKE', '%' . $busqueda . '%');
+        })
+        ->orWhereHas('route', function($query) use ($busqueda) {
+            $query->where('route_name', 'LIKE', '%' . $busqueda . '%');
+        })
+        ->orderBy('enabled', 'desc') // Los habilitados primero
+        ->orderBy('created_at', 'asc') // Luego por fecha de creación
+        ->paginate(10);
 
-        // Pasar los datos a la vista
-        return view('customer.index', compact('customers', 'busqueda'))
-            ->with('i', ($customers->currentPage() - 1) * $customers->perPage());
-    }
+    // Pasar los datos a la vista
+    return view('customer.index', compact('customers', 'busqueda'))
+        ->with('i', ($customers->currentPage() - 1) * $customers->perPage());
+}
+
+    
+
+    
+
+
+    
 
     public function create()
     {
@@ -45,25 +51,40 @@ class CustomerController extends Controller
     return view('customer.create', compact('customer', 'routes'));
     }
 
-    public function store(CustomerRequest $request)
-    {
-        // Validar si el número de teléfono o correo electrónico ya están en uso
-        $validatedData = $request->validated();
-        $existingCustomer = Customer::where('cell_phone', $validatedData['cell_phone'])
-                                    ->orWhere('mail', $validatedData['mail'])
-                                    ->first();
-        
-        if ($existingCustomer) {
-            return redirect()->route('customer.create')
-                ->with('error', 'El número de teléfono o correo electrónico ya están en uso.');
-        }
-    
-        // Crear el cliente si no hay problemas de duplicados
-        Customer::create($validatedData);
-    
-        return redirect()->route('customer.index')
-            ->with('success', 'Cliente creado exitosamente.');
+  public function store(CustomerRequest $request)
+{
+    // Validar si el número de teléfono o correo electrónico ya están en uso
+    $validatedData = $request->validated();
+
+    // Validar el formato del correo electrónico
+    if (!preg_match('/^\S+@(gmail\.com|hotmail\.com)$/i', $validatedData['mail'])) {
+        return redirect()->route('customer.create')
+            ->withErrors(['mail' => 'El formato del correo electrónico no es válido.'])
+            ->withInput();
     }
+
+    $existingPhone = Customer::where('cell_phone', $validatedData['cell_phone'])->first();
+    if ($existingPhone) {
+        return redirect()->route('customer.create')
+            ->withErrors(['cell_phone' => 'El número de teléfono ya está en uso.'])
+            ->withInput();
+    }
+
+    $existingEmail = Customer::where('mail', $validatedData['mail'])->first();
+    if ($existingEmail) {
+        return redirect()->route('customer.create')
+            ->withErrors(['mail' => 'El correo electrónico ya está en uso.'])
+            ->withInput();
+    }
+
+    // Crear el cliente si no hay problemas de duplicados
+    Customer::create($validatedData);
+
+    return redirect()->route('customer.index')
+        ->with('success', 'Cliente creado exitosamente.');
+}
+
+    
     
 
     public function show($id)

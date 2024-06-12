@@ -12,12 +12,15 @@ use App\Models\Product;
 class LoadController extends Controller
 {
     public function index()
-    {
-        $loads = Load::with('detailsLoads')->paginate();
+{
+    $loads = Load::with('detailsLoads')
+                ->orderBy('enabled', 'desc') // Ordena las cargas habilitadas primero
+                ->paginate();
 
-        return view('load.index', compact('loads'))
+    return view('load.index', compact('loads'))
             ->with('i', (request()->input('page', 1) - 1) * $loads->perPage());
-    }
+}
+
 
     public function create()
     {
