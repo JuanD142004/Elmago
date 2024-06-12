@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\EnabledScope;
 
 /**
  * Class Supplier
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Supplier extends Model
 {
+    use HasFactory;
     
     static $rules = [
 		'nit' => 'required|string',
@@ -59,6 +61,10 @@ class Supplier extends Model
     public function purchases()
     {
         return $this->hasMany('App\Models\Purchase', 'suppliers_id', 'id');
+    }
+    protected static function booted()
+    {
+        static::addGlobalScope(new EnabledScope);
     }
     
 

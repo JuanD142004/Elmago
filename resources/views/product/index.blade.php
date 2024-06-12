@@ -144,13 +144,13 @@
                                     <td>{{ $product->product_description }}</td>
                                     <td>{{ $product->price_unit }}</td>
                                     <td class="text-center" id="exitencia">{{ $product->stock }}</td>
-                                    <td>{{ $product->supplier->supplier_name }}</td>
+                                    <td>{{ $product->supplier ? $product->supplier->supplier_name : 'Proveedor no disponible' }}</td>
                                     <td>
                                         <form id="toggle-form-{{ $product->id }}" action="{{ route('product.update_status', $product->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
                                             <button type="button" class="btn btn-sm {{ $product->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $product->id }}, {{ $product->enabled ? 0 : 1 }})">
-                                                <i class="fa fa-fw {{ $product->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $product->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                                                <i class="fa fa-fw {{ $product->enabled ? 'fa-check' :'fa-times'  }}"></i> {{ $product->enabled ? 'Habilitado' : 'Inhabiliado' }}
                                             </button>
                                             <input type="hidden" name="status" value="{{ $product->enabled ? 0 : 1 }}">
                                         </form>
