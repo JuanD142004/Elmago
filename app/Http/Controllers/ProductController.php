@@ -7,25 +7,10 @@ use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
 
-
-/**
- * Class ProductController
- * @package App\Http\Controllers
- */
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-
-        $products = Product::enabledSupplier()->with('supplier')->get();
-
-        // Obtener productos que están asociados a proveedores habilitados
-        $products = Product::whereHas('supplier', function ($query) {
-            $query->where('enabled', true);
-        })->with('supplier')->get();
         $busqueda = $request->busqueda;
         $products = Product::where('product_name_and_brand', 'LIKE', '%' . $busqueda . '%')
                             ->orderBy('id', 'asc')
@@ -35,9 +20,6 @@ class ProductController extends Controller
             ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $product = new Product();
@@ -45,62 +27,24 @@ class ProductController extends Controller
         return view('product.create', compact('product', 'suppliers'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ProductRequest $request)
     {
-        $request->validate([
-            'product_name' => 'required|required',
-            'brand' => 'required',
-            'price_unit' => 'required|required',
-            'unit_of_measurement' => 'required',
-            'suppliers_id' => 'required|exists:suppliers,id',
-            // otras reglas de validación
-        ], [
-            'product_name_and_brand.required' => 'El nombre del producto es obligatorio.',
-            'brand.required' => 'La marca es obligatoria.',
-            'price_unit.required' => 'El precio unitario es obligatorio.',
-            'unit_of_measurement.required' => 'La unidad de medida es obligatoria.',
-            'suppliers_id.required' => 'El proveedor es obligatorio.',
-            'suppliers_id.exists' => 'El proveedor seleccionado no es válido.',
-            // otros mensajes de validación
-        ]);
-
-        $product = Product::create($request->all());
-        $data = $request->validated();
-        $data['stock'] = 0; // Asegurar que el stock inicial es 0
-        Product::create($data);
+        Product::create($request->validated());
         return redirect()->route('product.index')
             ->with('success', 'Producto creado con éxito.');
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        $product = Product::find($id);
 
-        return view('product.show', compact('product'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
-        $product = Product::find($id);
+        $product = Product::findOrFail($id);
         $suppliers = Supplier::all();
         return view('product.edit', compact('product', 'suppliers'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(ProductRequest $request, Product $product)
+    public function update(ProductRequest $request, $id)
     {
+        $product = Product::findOrFail($id);
         $product->update($request->validated());
-
         return redirect()->route('product.index')
             ->with('success', 'Producto actualizado con éxito');
     }
@@ -108,7 +52,7 @@ class ProductController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|boolean', // Asegura que 'status' sea un valor booleano
+            'status' => 'required|boolean',
         ]);
 
         $product = Product::findOrFail($id);
@@ -122,20 +66,11 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::find($id);
-        if ($product->enabled == 1) {
-            Product::where('id', $product->id)
-                ->update([
-                    'enabled' => 0
-                ]);
-        } else {
-            Product::where('id', $product->id)
-                ->update([
-                    'enabled' => 1
-                ]);
-        }
-        $product = Product::all();
+        $product = Product::findOrFail($id);
+        $product->enabled = !$product->enabled;
+        $product->save();
+
         return redirect()->route('product.index')
-            ->with('success', 'Actualizacion de estado', 'product');
+            ->with('success', 'Actualización de estado del producto realizada con éxito.');
     }
 }
