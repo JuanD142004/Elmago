@@ -46,6 +46,7 @@ class Product extends Model
     public function supplier()
     {
         return $this->belongsTo(\App\Models\Supplier::class, 'suppliers_id', 'id');
+        return $this->belongsTo(Supplier::class);
     }
     
     /**
@@ -70,6 +71,12 @@ class Product extends Model
     public function loads()
     {
         return $this->hasMany(\App\Models\Load::class, 'id', 'products_id');
+    }
+    public function scopeEnabledSupplier($query)
+    {
+        return $query->whereHas('supplier', function ($query) {
+            $query->where('enabled', true);
+        });
     }
     
 

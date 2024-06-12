@@ -139,7 +139,7 @@
                                     <td>{{ $product->brand }}</td>
                                     <td>{{ $product->price_unit }}</td>
                                     <td>{{ $product->unit_of_measurement }}</td>
-                                    <td>{{ $product->supplier->supplier_name }}</td>
+                                    <td>{{ $product->supplier ? $product->supplier->supplier_name : 'Proveedor no disponible' }}</td>
                                     <td>
                                         <form id="toggle-form-{{ $product->id }}" action="{{ route('product.update_status', $product->id) }}" method="POST">
                                             @csrf

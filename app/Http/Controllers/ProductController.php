@@ -19,6 +19,13 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+
+        $products = Product::enabledSupplier()->with('supplier')->get();
+
+        // Obtener productos que están asociados a proveedores habilitados
+        $products = Product::whereHas('supplier', function ($query) {
+            $query->where('enabled', true);
+        })->with('supplier')->get();
         $busqueda = $request->busqueda;
         $products = Product::where('product_name', 'LIKE', '%' . $busqueda . '%')
                                 ->orWhere('brand', 'LIKE', '%' . $busqueda . '%')
@@ -46,7 +53,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $request->validate([
-            'product_name' => 'required|unique:products,product_name',
+            'product_name' => 'required|required',
             'brand' => 'required',
             'price_unit' => 'required|required',
             'unit_of_measurement' => 'required',
