@@ -68,10 +68,12 @@ class ProductController extends Controller
         ]);
 
         $product = Product::create($request->all());
+        $data = $request->validated();
+        $data['stock'] = 0; // Asegurar que el stock inicial es 0
+        Product::create($data);
         return redirect()->route('product.index')
             ->with('success', 'Producto creado con éxito.');
-    } 
-
+    }
     /**
      * Display the specified resource.
      */

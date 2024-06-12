@@ -48,14 +48,19 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
+        // Iniciar una transacción de base de datos
+        DB::beginTransaction();
+    
         try {
             // Obtener los datos enviados desde el formulario
             $data = $request->input('data');
     
             // Validar que el producto tenga stock suficiente
             foreach ($data['detalles'] as $detalle) {
-                if (!Product::where('id', $detalle['products_id'])->where('stock', '>', 0)->exists()) {
-                    return response()->json(['success' => false, 'error' => 'El producto seleccionado no tiene stock suficiente.'], 400);
+                $product = Product::findOrFail($detalle['products_id']);
+                if ($product->stock < $detalle['amount']) {
+                    // Retornar con un mensaje de error si el stock es insuficiente
+                    return redirect()->back()->withInput()->with('error', 'El producto ' . $product->product_name_and_brand . ' no tiene stock suficiente.');
                 }
             }
     
@@ -66,10 +71,9 @@ class SaleController extends Controller
             $venta->payment_method = $data['payment_method'];
             $venta->enabled = true; // Marcar la venta como habilitada
             $venta->save();
+    
             // Recorrer y guardar los detalles de la venta en la base de datos
             foreach ($data['detalles'] as $detalle) {
-                
-                
                 $detalleVenta = new DetailsSale();
                 $detalleVenta->products_id = $detalle['products_id'];
                 $detalleVenta->price_unit = preg_replace('/[^\d]/', '', $detalle['price_unit']); // Remover formateo
@@ -84,17 +88,20 @@ class SaleController extends Controller
                 $product->save();
             }
     
+            // Confirmar la transacción de base de datos
+            DB::commit();
+    
             // Retornar una respuesta de éxito
             return redirect()->route('sales.index')->with('success', 'Venta creada exitosamente.');
         } catch (\Exception $e) {
+            // Revertir la transacción en caso de cualquier excepción
+            DB::rollBack();
+    
             // Manejar cualquier excepción que ocurra durante el proceso
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
     
-
-
-
     /**
      * Display the specified resource.
      *
