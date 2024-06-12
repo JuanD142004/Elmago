@@ -100,9 +100,14 @@
 
                             <div class="form-group">
                                 {{ Form::label('customers_id', 'Nombre del Cliente') }}
-                                {{ Form::select('customers_id', $customers->pluck('customer_name', 'id'), null, ['class' => 'form-control' . ($errors->has('customers_id') ? ' is-invalid' : ''), 'placeholder' => 'Selecciona un cliente']) }}
+                                {{ Form::select('customers_id', $customers->pluck('customer_name', 'id'), null, ['class' => 'form-control' . ($errors->has('customers_id') ? ' is-invalid' : ''), 'placeholder' => 'Selecciona un cliente', 'id' => 'customers_id']) }}
                                 {!! $errors->first('customers_id', '<div class="invalid-feedback">:message</div>') !!}
-                                <span class="error-message customers-error"></span> <!-- Clase específica para el mensaje de error del cliente -->
+                                <span class="error-message customers-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                {{ Form::label('route', 'Ruta del Cliente') }}
+                                {{ Form::text('route', null, ['class' => 'form-control', 'readonly' => 'readonly', 'id' => 'route']) }}
                             </div>
 
                             <div class="form-group">
@@ -158,7 +163,7 @@
                                 <tbody id="selectedProductsBody">
                                     <tr class="product-row-template">
                                         <td>
-                                            {{ Form::select('products_id[]', $products->pluck('product_name', 'id'), null, ['class' => 'form-control products-id', 'placeholder' => 'Selecciona un producto']) }}
+                                            {{ Form::select('products_id[]', $products->pluck('product_name_and_brand', 'id'), null, ['class' => 'form-control products-id', 'placeholder' => 'Selecciona un producto']) }}
                                             {!! $errors->first('products_id', '<div class="invalid-feedback">:message</div>') !!}
                                             <span class="error-message product-error"></span> <!-- Clase específica para el mensaje de error del producto -->
                                         </td>
@@ -203,132 +208,61 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const customers = @json($customers);
         const products = @json($products);
 
-        function updatePriceUnit(selectElement) {
-            const selectedProductId = selectElement.value;
-            const selectedProduct = products.find(product => product.id == selectedProductId);
-            const priceUnitInput = selectElement.closest('tr').querySelector('.price-unit');
-            let priceUnitInPesos = 0;
-
-            if (selectedProduct) {
-                const priceString = selectedProduct.price_unit.replace(/\D/g, '');
-                priceUnitInPesos = parseFloat(priceString);
-            }
-
-            if (isNaN(priceUnitInPesos)) {
-                priceUnitInput.value = '';
+        // Función para poblar el campo de ruta cuando se selecciona un cliente
+        function updateRoute() {
+            const customerId = document.getElementById('customers_id').value;
+            const selectedCustomer = customers.find(customer => customer.id == customerId);
+            if (selectedCustomer && selectedCustomer.route) {
+                const routeId = selectedCustomer.route.id;
+                const routeName = selectedCustomer.route.route_name; // Ajusta esto según la estructura de tus datos
+                document.getElementById('route').value = routeId + ' - ' + routeName;
             } else {
-                const formattedPrice = '$' + new Intl.NumberFormat('es-CO').format(priceUnitInPesos);
-                priceUnitInput.value = formattedPrice;
+                document.getElementById('route').value = 'Sin ruta'; // Manejo para clientes sin ruta asociada
             }
-            updateTotal(selectElement.closest('tr'));
         }
 
-        function updateTotal(row) {
-            const priceUnitInput = row.querySelector('.price-unit');
-            const amountInput = row.querySelector('.amount');
-            const discountInput = row.querySelector('.discount');
-            const totalPriceInput = row.querySelector('.total-price');
+        // Función para ordenar y poblar los selects de productos
+        function populateProductOptions(selectElement) {
+            // Almacenar el valor seleccionado previamente
+            const selectedValue = selectElement.value;
 
-            const priceUnit = parseFloat(priceUnitInput.value.replace(/\D/g, ''));
-            const amount = parseFloat(amountInput.value) || 0;
-            const discount = parseDiscount(discountInput.value);
+            // Limpia las opciones existentes
+            selectElement.innerHTML = '<option value="">Selecciona un producto</option>';
 
-            if (isNaN(priceUnit) || isNaN(amount) || isNaN(discount)) {
-                totalPriceInput.value = '';
-            } else {
-                let totalInPesos = (priceUnit * amount) - discount;
-                totalInPesos = Math.round(totalInPesos);
-
-                const formattedTotal = '$' + new Intl.NumberFormat('es-CO').format(totalInPesos);
-                totalPriceInput.value = formattedTotal;
-            }
-            updatePriceTotal();
-        }
-
-        function parseDiscount(discountString) {
-            const discountNumber = parseFloat(discountString.replace(/\D/g, ''));
-
-            if (isNaN(discountNumber)) {
+            // Ordena los productos alfabéticamente
+            products.sort((a, b) => {
+                const nameA = a.product_name_and_brand.toUpperCase(); // Ignorar mayúsculas y minúsculas
+                const nameB = b.product_name_and_brand.toUpperCase(); // Ignorar mayúsculas y minúsculas
+                if (nameA < nameB) {
+                    return -1;
+                }
+                if (nameA > nameB) {
+                    return 1;
+                }
                 return 0;
-            } else {
-                return discountNumber;
-            }
-        }
-
-        function toggleRemoveButton(selectElement) {
-            const row = selectElement.closest('tr');
-            const removeButton = row.querySelector('.remove-product-btn');
-            removeButton.classList.remove('d-none');
-        }
-
-        function addRemoveButtonHandler(row) {
-            if (!row.classList.contains('product-row-template')) {
-                row.querySelector('.remove-product-btn').addEventListener('click', function() {
-                    row.remove();
-                    updatePriceTotal();
-                });
-            }
-        }
-
-        function updatePriceTotal() {
-            const totalPrices = document.querySelectorAll('.total-price');
-            let totalPriceSum = 0;
-            totalPrices.forEach(input => {
-                const totalPrice = parseFloat(input.value.replace(/\D/g, ''));
-                if (!isNaN(totalPrice)) {
-                    totalPriceSum += totalPrice;
-                }
             });
 
-            totalPriceSum = Math.round(totalPriceSum);
+            // Añade las opciones ordenadas
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = product.product_name_and_brand;
+                selectElement.appendChild(option);
+            });
 
-            const formattedTotalPrice = '$' + new Intl.NumberFormat('es-CO').format(totalPriceSum);
-            const priceTotalInput = document.getElementById('price_total');
-            priceTotalInput.value = formattedTotalPrice;
+            // Restablecer el valor seleccionado previamente
+            selectElement.value = selectedValue;
         }
 
-        document.querySelectorAll('.products-id').forEach(select => {
-            select.addEventListener('change', function() {
-                updatePriceUnit(this);
-                toggleRemoveButton(this);
-            });
+        // Llamar la función para rellenar los selects al cargar la página
+        document.querySelectorAll('.products-id').forEach(selectElement => {
+            populateProductOptions(selectElement);
         });
 
-        document.querySelectorAll('.amount, .discount').forEach(input => {
-            input.addEventListener('input', function() {
-                let value = this.value.trim();
-
-                if (value === '-') {
-                    this.value = '';
-                    return;
-                }
-
-                if (value.startsWith('-')) {
-                    value = value.substring(1);
-                    this.value = value;
-                }
-
-                if (this.classList.contains('amount')) {
-                    // Limit the value to be between 1 and 999
-                    let num = parseInt(this.value);
-                    if (num < 1) {
-                        this.value = '1';
-                    } else if (num > 999) {
-                        this.value = '999';
-                    }
-                }
-
-                if (this.classList.contains('discount') && value === '') {
-                    this.value = '$';
-                    return;
-                }
-
-                updateTotal(this.closest('tr'));
-            });
-        });
-
+        // Llamar la función para poblar los selects cada vez que se añade una nueva fila
         document.getElementById('addProductBtn').addEventListener('click', function() {
             const tableBody = document.getElementById('selectedProductsBody');
             const templateRow = tableBody.querySelector('.product-row-template');
@@ -349,7 +283,7 @@
                 toggleRemoveButton(this);
             });
 
-            document.querySelectorAll('.amount').forEach(input => {
+            newRow.querySelectorAll('.amount').forEach(input => {
                 input.addEventListener('input', function() {
                     let value = this.value.trim();
 
@@ -373,12 +307,112 @@
                 });
             });
 
-
             addRemoveButtonHandler(newRow);
+
+            // Llamar a la función para poblar las opciones del nuevo select
+            populateProductOptions(newRow.querySelector('.products-id'));
+        });
+
+        function updateTotal() {
+            const rows = document.querySelectorAll('.total-price');
+            let totalPriceSum = 0;
+
+            rows.forEach(row => {
+                const priceUnitInput = row.closest('tr').querySelector('.price-unit');
+                const amountInput = row.closest('tr').querySelector('.amount');
+                const discountInput = row.closest('tr').querySelector('.discount');
+                const totalPriceInput = row;
+
+                const priceUnit = parseFloat(priceUnitInput.value.replace(/\D/g, ''));
+                const amount = parseFloat(amountInput.value) || 0;
+                const discount = parseDiscount(discountInput.value);
+
+                if (!isNaN(priceUnit) && !isNaN(amount) && !isNaN(discount)) {
+                    let totalInPesos = (priceUnit * amount) - discount;
+                    totalInPesos = Math.round(totalInPesos);
+                    totalPriceSum += totalInPesos;
+
+                    const formattedTotal = '$' + new Intl.NumberFormat('es-CO').format(totalInPesos);
+                    totalPriceInput.value = formattedTotal;
+                }
+            });
+
+            // Actualizar el precio total general
+            const formattedTotalPrice = '$' + new Intl.NumberFormat('es-CO').format(totalPriceSum);
+            const priceTotalInput = document.getElementById('price_total');
+            priceTotalInput.value = formattedTotalPrice;
+        }
+
+        // Llamar a la función updateTotal cuando cambie el valor de los campos relevantes
+        document.addEventListener('input', function(event) {
+            const target = event.target;
+            if (target.classList.contains('amount') || target.classList.contains('discount')) {
+                updateTotal();
+            }
+        });
+
+        function parseDiscount(discountString) {
+            const discountNumber = parseFloat(discountString.replace(/\D/g, ''));
+
+            if (isNaN(discountNumber)) {
+                return 0;
+            } else {
+                return discountNumber;
+            }
+        }
+
+        function toggleRemoveButton(selectElement) {
+            const row = selectElement.closest('tr');
+            const removeButton = row.querySelector('.remove-product-btn');
+            removeButton.classList.remove('d-none');
+        }
+
+        function addRemoveButtonHandler(row) {
+            if (!row.classList.contains('product-row-template')) {
+                row.querySelector('.remove-product-btn').addEventListener('click', function() {
+                    row.remove();
+                    updateTotal();
+                });
+            }
+        }
+
+        function updatePriceUnit(selectElement) {
+            const selectedProductId = selectElement.value;
+            const selectedProduct = products.find(product => product.id == selectedProductId);
+            const priceUnitInput = selectElement.closest('tr').querySelector('.price-unit');
+            let priceUnitInPesos = 0;
+
+            if (selectedProduct) {
+                const priceString = selectedProduct.price_unit.replace(/\D/g, '');
+                priceUnitInPesos = parseFloat(priceString);
+            }
+
+            if (isNaN(priceUnitInPesos)) {
+                priceUnitInput.value = '';
+            } else {
+                const formattedPrice = '$' + new Intl.NumberFormat('es-CO').format(priceUnitInPesos);
+                priceUnitInput.value = formattedPrice;
+            }
+            updateTotal();
+        }
+
+        document.querySelectorAll('.products-id').forEach(select => {
+            select.addEventListener('change', function() {
+                updatePriceUnit(this);
+                toggleRemoveButton(this);
+            });
         });
 
         const initialRow = document.querySelector('.product-row-template');
         addRemoveButtonHandler(initialRow);
+
+        // Llamar la función para poblar el campo de ruta cuando se carga la página
+        updateRoute();
+
+        // Agregar evento change al campo de clientes para actualizar la ruta cuando cambia la selección
+        document.getElementById('customers_id').addEventListener('change', function() {
+            updateRoute();
+        });
     });
 
     function enviarDetalles() {

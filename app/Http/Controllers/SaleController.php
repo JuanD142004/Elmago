@@ -35,8 +35,7 @@ class SaleController extends Controller
         $sale = new Sale();
         $detailsSale = new DetailsSale();
         $products = Product::all();
-        $customers = Customer::all('id', 'customer_name');
-
+        $customers = Customer::with('route:id,route_name')->get(['id', 'customer_name', 'routes_id']);
         return view('sale.create', compact('sale', 'detailsSale', 'products', 'customers'));
     }
 

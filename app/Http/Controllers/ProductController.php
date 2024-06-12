@@ -20,15 +20,15 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $busqueda = $request->busqueda;
-        $products = Product::where('product_name', 'LIKE', '%' . $busqueda . '%')
-                                ->orWhere('brand', 'LIKE', '%' . $busqueda . '%')
-                                ->orderBy('id', 'asc')
-                                ->paginate();
-    
+        $products = Product::where('product_name_and_brand', 'LIKE', '%' . $busqueda . '%')
+            ->orWhere('brand', 'LIKE', '%' . $busqueda . '%')
+            ->orderBy('id', 'asc')
+            ->paginate();
+
         return view('product.index', compact('products', 'busqueda'))
             ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -37,7 +37,7 @@ class ProductController extends Controller
     {
         $product = new Product();
         $suppliers = Supplier::all();
-        return view('product.create', compact('product','suppliers'));
+        return view('product.create', compact('product', 'suppliers'));
     }
 
     /**
@@ -46,14 +46,14 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $request->validate([
-            'product_name' => 'required|unique:products,product_name',
+            'product_name_and_brand' => 'required|unique:products,product_name',
             'brand' => 'required',
             'price_unit' => 'required|required',
             'unit_of_measurement' => 'required',
             'suppliers_id' => 'required|exists:suppliers,id',
             // otras reglas de validación
         ], [
-            'product_name.required' => 'El nombre del producto es obligatorio.',
+            'product_name_and_brand.required' => 'El nombre del producto es obligatorio.',
             'brand.required' => 'La marca es obligatoria.',
             'price_unit.required' => 'El precio unitario es obligatorio.',
             'unit_of_measurement.required' => 'La unidad de medida es obligatoria.',
@@ -84,7 +84,7 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $suppliers = Supplier::all();
-        return view('product.edit', compact('product','suppliers'));
+        return view('product.edit', compact('product', 'suppliers'));
     }
 
     /**
@@ -97,6 +97,7 @@ class ProductController extends Controller
         return redirect()->route('product.index')
             ->with('success', 'Producto actualizado con éxito');
     }
+
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
@@ -114,20 +115,20 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product =Product::find ($id);
-        if($product->enabled == 1){
-            Product::where('id',$product->id)
-            ->update([
-                'enabled'=> 0
-            ]);
-        }else {
+        $product = Product::find($id);
+        if ($product->enabled == 1) {
             Product::where('id', $product->id)
-            ->update([
-                'enabled'=>1
-            ]);
+                ->update([
+                    'enabled' => 0
+                ]);
+        } else {
+            Product::where('id', $product->id)
+                ->update([
+                    'enabled' => 1
+                ]);
         }
         $product = Product::all();
         return redirect()->route('product.index')
-            ->with('success', 'Actualizacion de estado','product');
+            ->with('success', 'Actualizacion de estado', 'product');
     }
 }
