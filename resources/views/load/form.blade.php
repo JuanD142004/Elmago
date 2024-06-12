@@ -168,7 +168,7 @@
 
                                             <td>
                                                 <div class="form-group">
-                                                    {{ Form::select('products_id[]', $products->pluck('product_name', 'id'), old('products_id'), ['class' => 'form-control ' . ($errors->has('products_id') ? 'is-invalid' : ''), 'placeholder' => 'Selecciona el producto']) }}
+                                                    {{ Form::select('products_id[]', $products->pluck('product_name_and_brand', 'id'), old('products_id'), ['class' => 'form-control ' . ($errors->has('products_id') ? 'is-invalid' : ''), 'placeholder' => 'Selecciona el producto']) }}
                                                     {!! $errors->first('products_id', '<div class="invalid-feedback">:message</div>') !!}
                                                 </div>
                                             </td>
