@@ -150,7 +150,7 @@
                                             @csrf
                                             @method('PATCH')
                                             <button type="button" class="btn btn-sm {{ $product->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $product->id }}, {{ $product->enabled ? 0 : 1 }})">
-                                                <i class="fa fa-fw {{ $product->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $product->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                                                <i class="fa fa-fw {{ $product->enabled ? 'fa-check' :'fa-times'  }}"></i> {{ $product->enabled ? 'Habilitado' : 'Inhabiliado' }}
                                             </button>
                                             <input type="hidden" name="status" value="{{ $product->enabled ? 0 : 1 }}">
                                         </form>
