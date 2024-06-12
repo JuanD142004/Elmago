@@ -52,6 +52,12 @@ class Product extends Model
     {
         return $this->hasMany(\App\Models\Load::class, 'id', 'products_id');
     }
+    public function scopeEnabledSupplier($query)
+    {
+        return $query->whereHas('supplier', function ($query) {
+            $query->where('enabled', true);
+        });
+    }
     
 
 }
