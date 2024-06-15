@@ -41,7 +41,7 @@
     <div class="container">
         <div class="form-group">
             <label for="product_name_and_brand">{{ __('Nombre y marca del Producto') }}</label>
-            <input type="text" name="product_name_and_brand" class="form-control @error('product_name_and_brand') is-invalid @enderror" value="{{ old('product_name_and_brand') }}" id="product_name_and_brand" placeholder="Nombre del Producto">
+            <input type="text" name="product_name_and_brand" class="form-control @error('product_name_and_brand') is-invalid @enderror" value="{{ old('product_name_and_brand', $product->product_name_and_brand) }}" id="product_name_and_brand" placeholder="Nombre del Producto">
             {!! $errors->first('product_name_and_brand', '<div class="invalid-feedback">El Nombre del producto es Obligatorio</div>') !!}
         </div>
         <div class="form-group">
