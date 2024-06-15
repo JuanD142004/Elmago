@@ -198,7 +198,7 @@
                     <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
                         <img src="{{asset('img/logo.png')}}" alt="Logo" style="max-width: 30px;margin: 0% 4%">
                     </a>
-                    <span class="text-muted">&copy; 2024 Distribuciones el Mago, Diseñado por <b>Developer Programer</b></span>
+                    <span class="text-muted">&copy; 2024 Distribuciones el Mago, Diseñado por <b>Software Innovators</b></span>
                 </div>
 
                 <ul class="nav col-md-4 justify-content-end list-unstyled d-flex ">
