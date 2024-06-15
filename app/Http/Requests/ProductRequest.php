@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,7 +15,12 @@ class ProductRequest extends FormRequest
         return [
             'product_name_and_brand' => 'required|string|max:90',
             'price_unit' => 'required|string|max:45',
-            'product_description' => 'required|string|max:100',
+            'product_description' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\s]+$/'
+            ],
             'stock' => 'required|integer|min:0',
             'suppliers_id' => 'required|exists:suppliers,id',
         ];
@@ -28,6 +32,7 @@ class ProductRequest extends FormRequest
             'product_name_and_brand.required' => 'El nombre y marca del producto es obligatorio.',
             'price_unit.required' => 'El precio unitario es obligatorio.',
             'product_description.required' => 'La descripción del producto es obligatoria.',
+            'product_description.regex' => 'La descripción debe contener al menos una letra y un número.',
             'stock.required' => 'La cantidad de existencias es obligatoria.',
             'stock.integer' => 'La cantidad de existencias debe ser un número entero.',
             'stock.min' => 'La cantidad de existencias no puede ser negativa.',
@@ -36,3 +41,4 @@ class ProductRequest extends FormRequest
         ];
     }
 }
+
