@@ -50,10 +50,10 @@ Route::patch('/product/{id}/update_status', [ProductController::class, 'updateSt
 
 // Rutas para los proveedores
 Route::resource('supplier', SupplierController::class);
+Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('supplier.create');
 Route::patch('/supplier/disable/{id}', [SupplierController::class, 'disable'])->name('supplier.disable');
 Route::patch('/supplier/enable/{id}', [SupplierController::class, 'enable'])->name('supplier.enable');
 Route::patch('/supplier/{id}/update_status', [SupplierController::class, 'updateStatus'])->name('supplier.update_status');
-Route::get('/supplier/create', 'SupplierController@create')->name('suppliers.create');
 
 
 // Rutas para los tipos de camión
