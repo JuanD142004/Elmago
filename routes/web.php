@@ -53,7 +53,7 @@ Route::resource('supplier', SupplierController::class);
 Route::patch('/supplier/disable/{id}', [SupplierController::class, 'disable'])->name('supplier.disable');
 Route::patch('/supplier/enable/{id}', [SupplierController::class, 'enable'])->name('supplier.enable');
 Route::patch('/supplier/{id}/update_status', [SupplierController::class, 'updateStatus'])->name('supplier.update_status');
-Route::get('/supplier/create', 'SupplierController@create')->name('suppliers.create');
+// Route::get('/supplier/create', 'SupplierController@create')->name('suppliers.create');
 
 
 // Rutas para los tipos de camión
