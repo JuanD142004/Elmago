@@ -31,11 +31,12 @@ class RouteController extends Controller
      */
     public function create()
 {
-    $routes = new Route();
     $departaments = Departament::all();
-    // $municipalities = Municipality::all(); // Agrega esta línea para obtener la lista de municipios
-    return view('route.create', compact('routes', 'departaments'));
+    $municipalities = Municipality::all();
+
+    return view('route.create', compact('departaments', 'municipalities'));
 }
+
 
     /**
      * Store a newly created resource in storage.
@@ -46,18 +47,17 @@ class RouteController extends Controller
             'route_name' => 'required|string|max:255',
             'departament_id' => 'required|integer',
             'municipalities' => 'required|array',
+            'municipalities.*' => 'string'
         ]);
     
-        Route::create([
-            'route_name' => $request->route_name,
-            'departament_id' => $request->departament_id,
-            'municipalities' => json_encode($request->municipalities),
-        ]);
+        $route = new Route();
+        $route->route_name = $request->route_name;
+        $route->departament_id = $request->departament_id;
+        $route->municipalities = json_encode($request->municipalities);
+        $route->save();
     
-        return redirect()->route('route.index')
-            ->with('success', 'Ruta creada exitosamente.');
+        return redirect()->route('route.index')->with('success', 'Ruta creada con éxito');
     }
-    
 
     /**
      * Display the specified resource.
@@ -82,26 +82,27 @@ class RouteController extends Controller
     return view('route.edit', compact('route', 'departaments', 'municipalities'));
 }
 
+
     /**
      * Update the specified resource in storage.
      */
-    public function update(RouteRequest $request, Route $route)
+    public function update(Request $request, $id)
     {
-        $route->update($request->validated());
-
-        return redirect()->route('route.index')
-            ->with('success', 'route updated successfully');
+        $request->validate([
+            'route_name' => 'required|string|max:255',
+            'departament_id' => 'required|integer',
+            'municipalities' => 'required|array',
+            'municipalities.*' => 'string'
+        ]);
+    
+        $route = Route::findOrFail($id);
+        $route->route_name = $request->route_name;
+        $route->departament_id = $request->departament_id;
+        $route->municipalities = json_encode($request->municipalities);
+        $route->save();
+    
+        return redirect()->route('route.index')->with('success', 'Ruta actualizada con éxito');
     }
-    public function updateStatus(Request $request, $id)
-{
-    $route = Route::findOrFail($id);
-    $route->enabled = $request->input('status');
-    $route->save();
-
-    return redirect()->back()->with('success', 'Ruta actualizada con exito.');
-}
-
- 
 
 
 

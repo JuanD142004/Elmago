@@ -235,7 +235,7 @@
                         extend: 'excel',
                         text: '<i class="fas fa-file-excel"></i>',
                         titleAttr: 'Exportar a Excel',
-                        title: 'Distribuciones El Mago Proveedores',
+                        title: 'Distribuciones El Mago Rutas',
                         className: 'btn btn-success',
                         exportOptions: {
                             columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
@@ -245,7 +245,7 @@
                         extend: 'pdf',
                         text: '<i class="fas fa-file-pdf"></i>',
                         titleAttr: 'Exportar a PDF',
-                        title: 'Distribuciones El Mago Proveedores',
+                        title: 'Distribuciones El Mago Rutas',
                         className: 'btn btn-danger',
                         exportOptions: {
                             columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
@@ -255,7 +255,7 @@
                         extend: 'print',
                         text: '<i class="fas fa-print"></i>',
                         titleAttr: 'Imprimir',
-                        title:'Distribuciones El Mago Pro',
+                        title:'Distribuciones El Mago Rutas',
                         className: 'btn btn-info',
                         exportOptions: {
                             columns: ':not(:last-child)' // Esto excluye la última columna (acciones)
