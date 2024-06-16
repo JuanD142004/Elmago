@@ -39,6 +39,9 @@ Auth::routes();
 
 // Agrupar todas las rutas que requieren autenticación
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    // Otras rutas protegidas
     // Rutas de recursos para los usuarios
     Route::resource('user', UserController::class);
     Route::patch('/user/{id}/update_status', [UserController::class, 'updateStatus'])->name('user.update_status');
