@@ -60,4 +60,10 @@ class Sale extends Model
     {
         return $this->hasMany('App\Models\customers', 'id', 'customers_id');
     }
+    public function scopeEnabledSupplier($query)
+    {
+        return $query->whereHas('coustomer', function ($query) {
+            $query->where('enabled', true);
+        });
+    }
 }

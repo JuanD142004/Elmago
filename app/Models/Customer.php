@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Route;
 use App\Models\Sale;
+use App\Scopes\EnabledScope;
 
 /**
  * Class Customer
@@ -53,6 +54,16 @@ class Customer extends Model
     public function sales()
     {
         return $this->hasMany(\App\Models\Sale::class, 'id', 'customers_id');
+    }
+    public function scopeEnabledSupplier($query)
+    {
+        return $query->whereHas('route', function ($query) {
+            $query->where('enabled', true);
+        });
+    }
+    protected static function booted()
+    {
+        static::addGlobalScope(new EnabledScope);
     }
     
 

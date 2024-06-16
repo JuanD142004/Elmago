@@ -177,7 +177,7 @@
                                                     @csrf
                                                     @method('PATCH')
                                                     <button type="button" class="btn btn-sm {{ $employee->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleStatus({{ $employee->id }}, {{ $employee->enabled ? 0 : 1 }})">
-                                                        <i class="fa fa-fw {{ $employee->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $employee->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                                                        <i class="fa fa-fw {{ $employee->enabled ? 'fa-check' : 'fa-times' }}"></i> {{ $employee->enabled ? 'Habilitado' : 'Inhabilitado' }}
                                                     </button>
                                                     <input type="hidden" name="status" value="{{ $employee->enabled ? 0 : 1 }}">
                                                 </form>
@@ -295,7 +295,7 @@
             const form = document.getElementById(`toggle-form-${employeeId}`);
             Swal.fire({
                 title: '¿Estás seguro?',
-                text: `Esta acción cambiará el estado del empleado a ${status ? 'habilitado' : 'inhabilitado'}!`,
+                text: `Esta acción cambiará el estado del empleado a ${status ? 'Habilitado' : 'Inhabilitado'}!`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',

@@ -167,7 +167,13 @@ Venta
                   @foreach ($sales as $sale)
                   <tr>
                     <td>{{ $sale->id }}</td>
-                    <td>{{ $sale->customer->id }} - {{ $sale->customer->customer_name }}</td>
+                    <td>
+    @if ($sale->customer)
+        {{ $sale->customer->id }} - {{ $sale->customer->customer_name }}
+    @else
+        Cliente no disponible
+    @endif
+</td>
                     <td>${{ number_format($sale->price_total, 2, '.', ',') }}</td>
                     <td>{{ $sale->payment_method }}</td>
                     <td class="d-print-none">

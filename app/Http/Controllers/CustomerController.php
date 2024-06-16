@@ -13,28 +13,15 @@ class CustomerController extends Controller
 {
     public function index(Request $request) // Asegúrate de recibir $request como parámetro
     {
-        // Obtener el valor de la búsqueda del request
-        $busqueda = $request->input('busqueda');
+        // Obtener todos los proveedores sin importar su estado
+        $customers = Customer::withoutGlobalScope(\App\Scopes\EnabledScope::class)
+            ->orderBy('enabled', 'desc')
+            ->orderBy('customer_name')
+            ->paginate();
 
-        // Realizar la búsqueda de los clientes
-        $customers = Customer::with('route')
-            ->where(function($query) use ($busqueda) {
-                $query->where('customer_name', 'LIKE', '%' . $busqueda . '%')
-                      ->orWhere('company_name', 'LIKE', '%' . $busqueda . '%')
-                      ->orWhere('cell_phone', 'LIKE', '%' . $busqueda . '%')
-                      ->orWhere('mail', 'LIKE', '%' . $busqueda . '%');
-            })
-            ->orWhereHas('route', function($query) use ($busqueda) {
-                $query->where('route_name', 'LIKE', '%' . $busqueda . '%');
-            })
-            ->orderBy('created_at', 'asc') // Luego los más recientes
-            ->orderBy('enabled', 'desc') // Los no anulados primero
             
-            ->paginate(10);
-
-        // Pasar los datos a la vista
-        return view('customer.index', compact('customers', 'busqueda'))
-            ->with('i', ($customers->currentPage() - 1) * $customers->perPage());
+        return view('customer.index', compact('customers'))
+            ->with('i', (request()->input('page', 1) - 1) * $customers->perPage());
     }
 
     public function create()
@@ -88,19 +75,19 @@ class CustomerController extends Controller
         ->with('success', 'Cliente actualizado correctamente');
 }
 public function updateStatus(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|boolean', // Asegura que 'status' sea un valor booleano
-    ]);
+    {
+        $request->validate([
+            'status' => 'required|boolean',
+        ]);
 
-    $customer = Customer::findOrFail($id);
-    $customer->enabled = $request->input('status');
-    $customer->save();
+        $customer = Customer::withoutGlobalScope(\App\Scopes\EnabledScope::class)->findOrFail($id);
+        $customer->enabled = $request->input('status');
+        $customer->save();
 
-    $action = $customer->enabled ? 'habilitado' : 'inhabilitado';
+        $action = $customer->enabled ? 'habilitado' : 'inhabilitado';
 
-    return redirect()->route('customer.index')->with('success', "El cliente ha sido $action correctamente.");
-}
+        return redirect()->back()->with('success', "El proveedor ha sido $action correctamente.");
+    }
 
 
     public function destroy($id)

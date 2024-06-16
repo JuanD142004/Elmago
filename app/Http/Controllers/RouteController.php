@@ -16,13 +16,33 @@ class RouteController extends Controller
      */
     public function index()
     {
-        $routes = Route::all();
+        // Obtener todas las rutas sin importar su estado
+        $routes = Route::withoutGlobalScope(\App\Scopes\EnabledScope::class)
+            ->orderBy('enabled', 'desc')
+            ->orderBy('route_name')
+            ->get();
+
+        // Decodificar municipalities para cada ruta
         foreach ($routes as $route) {
             $route->municipalities = $route->municipalities ? json_decode($route->municipalities) : [];
         }
-    
+
+        // Paginar resultados manualmente
+        $perPage = 5;
+        $currentPage = request()->input('page', 1);
+        $paginatedRoutes = $routes->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $pagination = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedRoutes,
+            $routes->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
         return view('route.index', compact('routes'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+            ->with('i', ($currentPage - 1) * $perPage)
+            ->with('pagination', $pagination);
     }
     
 
@@ -102,6 +122,20 @@ class RouteController extends Controller
         $route->save();
     
         return redirect()->route('route.index')->with('success', 'Ruta actualizada con éxito');
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|boolean',
+        ]);
+
+        $route = Route::withoutGlobalScope(\App\Scopes\EnabledScope::class)->findOrFail($id);
+        $route->enabled = $request->input('status');
+        $route->save();
+
+        $action = $route->enabled ? 'habilitado' : 'inhabilitado';
+
+        return redirect()->back()->with('success', "El proveedor ha sido $action correctamente.");
     }
 
 

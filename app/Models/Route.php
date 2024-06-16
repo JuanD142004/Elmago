@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\EnabledScope;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -72,6 +73,10 @@ class Route extends Model
     public function loads()
     {
         return $this->hasMany(\App\Models\Load::class, 'id', 'routes_id');
+    }
+    protected static function booted()
+    {
+        static::addGlobalScope(new EnabledScope);
     }
     
 

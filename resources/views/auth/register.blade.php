@@ -94,7 +94,7 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3 " style="color: #333; font-family: sans-serif;">
+                            {{--  <div class="row mb-3 " style="color: #333; font-family: sans-serif;">
                                 <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('Rol') }}</label>
 
                                 <div class="col-md-6">
@@ -107,7 +107,7 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
-                                </div>
+                                </div>  --}}
                             </div>
 
                             <div class="col-md-6 offset-md-4 mt-3">

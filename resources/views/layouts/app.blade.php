@@ -148,12 +148,12 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ route('product.index') }}"><i class="fa-solid fa-folder-open"></i>{{ __('Productos') }}</a>
                     </li>
-                    <li class="nav-item">
+                    {{--  <li class="nav-item">
                         <a class="nav-link text-white" href="{{ route('truck_type.index') }}"><i class="fa-solid fa-truck-front"></i>{{ __('Tipo de Camion') }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{route('load.index')}}"><i class="fa-solid fa-truck-arrow-right"></i>{{__('Carga')}}</a>
-                    </li>
+                    </li>  --}}
                     <li class="nav-item dropdown">
                         {{--  <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre><i class="fa-solid fa-road"></i> {{ __('Rutas') }}
                         </a>

@@ -144,13 +144,13 @@
                                             <td>{{ $customer->location }}</td>
                                             <td>{{ $customer->cell_phone }}</td>
                                             <td>{{ $customer->mail }}</td>
-                                            <td>{{ $customer->route->route_name }}</td> <!-- Accede al nombre de la ruta a través de la relación -->
+                                            <td>{{ $customer->route ? $customer->route->route_name : 'Ruta no disponible' }}
                                             <td> 
                                               <form id="toggle-form-{{ $customer->id }}" action="{{ route('customer.update_status', $customer) }}" method="POST">
                                                         @csrf
                                                         @method('PATCH')
                                                         <button type="button" class="btn btn-sm {{ $customer->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $customer->id }}, {{ $customer->enabled ? 0 : 1 }})">
-                                                            <i class="fa fa-fw {{ $customer->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $customer->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                                                            <i class="fa fa-fw {{ $customer->enabled ? 'fa-check' : 'fa-times' }}"></i> {{ $customer->enabled ? 'Habilitado' : 'Inhabilitado' }}
                                                         </button>
                                                         <input type="hidden" name="status" value="{{ $customer->enabled ? 0 : 1 }}">
                                                     </form>
@@ -274,7 +274,7 @@
 
         Swal.fire({
             title: '¿Estás seguro?',
-            text: `Esta acción cambiará el estado del cliente a ${status ? 'habilitado' : 'inhabilitado'}.`,
+            text: `Esta acción cambiará el estado del cliente a ${status ? 'Habilitado' : 'Inhabilitado'}.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

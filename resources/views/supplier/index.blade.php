@@ -155,7 +155,7 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="button" class="btn btn-sm {{ $supplier->enabled ? 'btn-warning' : 'btn-success' }}" onclick="toggleSaleStatus({{ $supplier->id }}, {{ $supplier->enabled ? 0 : 1 }})">
-                                                    <i class="fa fa-fw {{ $supplier->enabled ? 'fa-times' : 'fa-check' }}"></i> {{ $supplier->enabled ? 'Inhabilitar' : 'Habilitar' }}
+                                                    <i class="fa fa-fw {{ $supplier->enabled ? 'fa-check' : 'fa-times' }}"></i> {{ $supplier->enabled ? 'Habilitado' : 'Inhabilitado' }}
                                                 </button>
                                                 <input type="hidden" name="status" value="{{ $supplier->enabled ? 0 : 1 }}">
                                             </form>
@@ -268,7 +268,7 @@
         
     function toggleSaleStatus(supplierId, status) {
         var form = document.getElementById('toggle-form-' + supplierId);
-        var action = status ? 'habilitar' : 'inhabilitar';
+        var action = status ? 'inhabilitado' : 'Habilitado';
 
         Swal.fire({
             title: '¿Estás seguro?',
