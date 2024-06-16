@@ -163,11 +163,6 @@
                                 </tr>
                                 @endforeach
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="8">{{$products->appends(['busqueda'=>$busqueda])}}</td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
                 </div>

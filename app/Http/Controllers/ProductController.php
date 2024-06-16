@@ -11,13 +11,15 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $busqueda = $request->busqueda;
-        $products = Product::where('product_name_and_brand', 'LIKE', '%' . $busqueda . '%')
-                            ->orderBy('id', 'asc')
-                            ->paginate();
-        
-        return view('product.index', compact('products', 'busqueda'))
-            ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
+         // Obtener todos los proveedores sin importar su estado
+         $products = Product::withoutGlobalScope(\App\Scopes\EnabledScope::class)
+         ->orderBy('enabled', 'desc')
+         ->orderBy('product_name_and_brand')
+         ->paginate();
+
+         
+     return view('product.index', compact('products'))
+         ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
     }
 
     public function create()
@@ -55,13 +57,13 @@ class ProductController extends Controller
             'status' => 'required|boolean',
         ]);
 
-        $product = Product::findOrFail($id);
+        $product = Product::withoutGlobalScope(\App\Scopes\EnabledScope::class)->findOrFail($id);
         $product->enabled = $request->input('status');
         $product->save();
 
         $action = $product->enabled ? 'habilitado' : 'inhabilitado';
 
-        return redirect()->back()->with('success', "El producto ha sido $action correctamente.");
+        return redirect()->back()->with('success', "El proveedor ha sido $action correctamente.");
     }
 
     public function destroy($id)

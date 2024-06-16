@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Scopes\EnabledScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -59,6 +60,10 @@ class Product extends Model
         return $query->whereHas('supplier', function ($query) {
             $query->where('enabled', true);
         });
+    }
+    protected static function booted()
+    {
+        static::addGlobalScope(new EnabledScope);
     }
     
 
